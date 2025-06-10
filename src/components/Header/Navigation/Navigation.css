@@ -1,0 +1,14 @@
+.categoryPanel button{text-transform: capitalize !important;}
+.nav li .subMunu{visibility: hidden;}
+.nav li .subMunu button{font-weight: 400 !important;}
+
+.nav li:hover .subMunu{opacity: 1 !important; visibility: inherit; top: 100%;}
+
+.nav li .subMunu li:hover button{color: red !important;}
+
+
+.nav li .subMunu li .subMunu{top:0px !important; left: 120% !important; opacity: 0 !important;}
+.nav li .subMunu li:hover .subMunu{ left: 100% !important; opacity: 1 !important;}
+
+.nav li .subMunu li .subMunu button{color: black !important;}
+.nav li .subMunu li .subMunu button:hover{color: red !important;}
