@@ -8,8 +8,11 @@ import { FaRegHeart } from "react-icons/fa6";
 import Tooltip from '@mui/material/Tooltip';
 import { IconButton } from "@mui/material";
 import Navigation from "./Navigation/Navigation";
+import { useContext } from "react";
+import { MyContext } from "../../App";
 
 const Header = () => {
+    const {setOpenCartModal} = useContext(MyContext)
     return (
         <header className="bg-white">
             <div className="top-strip py-2">
@@ -38,7 +41,6 @@ const Header = () => {
                 <div className="container flex items-center justify-between gap-2">
                     <div className="col1 w-[30%]">
                         <Link to={'/'}>
-                            {/* <img src="https://i.ibb.co/PZntnvzy/Haramain-khushbo.jpg"/> */}
                             <h2 className="text-2xl font-semibold">Haramain <span className="text-primary">Khushbo</span></h2>
                         </Link>
                     </div>
@@ -76,7 +78,7 @@ const Header = () => {
                             </li>
                             <li>
                                 <Tooltip title="Cart">
-                               <IconButton>
+                               <IconButton onClick={()=>setOpenCartModal(true)}>
                                 <Stack spacing={4} direction="row" sx={{ color: 'action.active' }}>
                                   <Badge color="secondary" badgeContent={0} showZero>
                                         <MdOutlineShoppingCart className="text-xl"/>

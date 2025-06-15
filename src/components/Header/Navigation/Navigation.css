@@ -1,5 +1,5 @@
 .categoryPanel button{text-transform: capitalize !important;}
-.nav li .subMunu{visibility: hidden;}
+.nav li .subMunu{visibility: hidden; z-index: 100;}
 .nav li .subMunu button{font-weight: 400 !important;}
 
 .nav li:hover .subMunu{opacity: 1 !important; visibility: inherit; top: 100%;}
