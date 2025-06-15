@@ -42,6 +42,11 @@ p{font-size: 14px; line-height: 22px; margin-bottom: 8px;}
 /* sizemenu */
 #size-menu .MuiButtonBase-root{font-size: 12px !important;}
 
+/* otp */
+.otpBox input{border: 1px solid rgbe(0,0,0,0.3) !important; outline: none !important; border-radius: 4px !important;}
+.otpBox input:focus{border: 1px solid rgba(0,0,0,0.7) !important;}
+.otpBox .container{height: 90vh;display: flex;}
+
 /* cart panel */
 .cartPanel .MuiPaper-root{width:400px;}
 /* input number arrow hide */
