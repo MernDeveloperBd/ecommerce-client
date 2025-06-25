@@ -47,7 +47,7 @@ const CartItems = ({ size, qty }) => {
                 </div>
                 {/* info */}
                 <div className="info w-[85%] relative">
-                    <IoCloseSharp className="absolute top-[10px] right-[0px] text-[22px]" />
+                    <IoCloseSharp className="absolute top-[10px] right-[0px] text-[22px] cursor-pointer" />
                     <p className="text-[13px] mb-0">Panjabi brand</p>
                     <Link to={`/product/001`} className="link inline-block"><h3 className="text-[16px] font-semibold ">Product title with full title</h3></Link>
                     {/* Ratings */}
@@ -123,7 +123,7 @@ const CartItems = ({ size, qty }) => {
                 </div>
                 {/* info */}
                 <div className="info w-[85%] relative">
-                    <IoCloseSharp className="absolute top-[10px] right-[0px] text-[22px]" />
+                    <IoCloseSharp className="absolute top-[10px] right-[0px] text-[22px] cursor-pointer" />
                     <p className="text-[13px] mb-0">Panjabi brand</p>
                     <Link to={`/product/001`} className="link inline-block"><h3 className="text-[16px] font-semibold ">Product title with full title</h3></Link>
                     {/* Ratings */}

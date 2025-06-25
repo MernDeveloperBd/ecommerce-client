@@ -22,12 +22,19 @@ import Cart from './components/Cart/Cart'
 import toast, { Toaster } from 'react-hot-toast';
 import Verify from './components/Pages/Login/Verify'
 import ForgotPassword from './components/Pages/ForgotPassword/ForgotPassword'
+import Checkout from './components/Checkout/Checkout'
+import MyAccount from './components/Pages/MyAccount/MyAccount'
+import MyList from './components/MyList/MyLIst'
+import Orders from './components/Pages/Orders/Orders'
+
 
 export const MyContext = createContext()
 function App() {
   const [openProductDetailsModal, setOpenProductDetailsModal] = useState(false);
-  const [fullWidth, setFullWidth] = useState(true);
   const [maxWidth, setMaxWidth] = useState('md');
+  const [fullWidth, setFullWidth] = useState(true);
+  const[isLogin, setIsLogin] = useState(false);
+  
 
   // Cart
   const [openCartModal, setOpenCartModal] = useState(false);
@@ -41,6 +48,8 @@ function App() {
   };
   // alert box
   const openAlertBox = (status, msg) =>{
+    console.log(status);
+    
     if(status === "success"){
       toast.success(msg)
     }
@@ -49,7 +58,7 @@ function App() {
     }
   }
 
-  const values = { setOpenProductDetailsModal,openCartModal,toggleCartModal, setOpenCartModal, openAlertBox }
+  const values = { setOpenProductDetailsModal,openCartModal,toggleCartModal, setOpenCartModal, openAlertBox, isLogin, setIsLogin}
 
   return (
     <>
@@ -66,12 +75,18 @@ function App() {
               <Route path={'/cart'} exact={true} element={<Cart/> } />
               <Route path={'/verify'} exact={true} element={<Verify/> } />
               <Route path={'/forgotPassword'} exact={true} element={<ForgotPassword/> } />
+              <Route path={'/checkout'} exact={true} element={<Checkout/> } />
+              <Route path={'/my-account'} exact={true} element={<MyAccount/> } />
+              <Route path={'/my-list'} exact={true} element={<MyList/> } />
+              <Route path={'/my-orders'} exact={true} element={<Orders/> } />
+             
             </Routes>
           </div>
           <Footer />
         </MyContext.Provider>
       </BrowserRouter>
       <Toaster />
+      
       {/* modal */}
       <Dialog
         open={openProductDetailsModal}

@@ -28,7 +28,7 @@ const Navigation = () => {
                                 <NavLink to={"/"} className='hover:text-linkHover transition text-[14px] font-[500]'>হোম</NavLink>
                             </li>
                             <li className='relative'>
-                                <NavLink to={"/fashion"} className='hover:text-linkHover transition text-[14px] font-[500]'>পোশাক</NavLink>
+                                <NavLink to={"/productListing"} className='hover:text-linkHover transition text-[14px] font-[500]'>পোশাক</NavLink>
                                 {/* submenu */}
                                 <div className='subMunu absolute top-[120%] left-[0%] min-w-[150px] bg-white shadow-md opacity-0 transition-all'>
                                     <ul>

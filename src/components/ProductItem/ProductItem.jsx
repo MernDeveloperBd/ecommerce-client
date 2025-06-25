@@ -16,7 +16,7 @@ const ProductItem = ({ image1, image2 }) => {
     return (
         <div className='group productItem rounded-md overflow-hidden shadow-lg'>
             <div className="imgWraper w-[100%] h-[220px] overflow-hidden relative">
-                <Link to='/'>
+                <Link to='/productDetails/67ef9c737ba894425ea81652'>
                     <div className='img h-[220px] overflow-hidden'>
                         <img src={image1} alt="popular image" className="w-full" />
                         <img src={image2} alt="popular image" className="w-full absolute top-0 left-0 opacity-0 transition-all duration-700 group-hover:opacity-100 over" />
