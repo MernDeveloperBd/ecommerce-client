@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Search from "./search/Search";
 import Stack from '@mui/material/Stack';
 import Badge from '@mui/material/Badge';
@@ -14,17 +14,33 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { BsFillBagCheckFill } from "react-icons/bs";
 import { IoIosLogOut, IoMdHeart } from "react-icons/io";
+import { fetchDataFromApi } from "../../utils/api";
 
 const Header = () => {
+    const { setOpenCartModal, isLogin, setIsLogin, userData } = useContext(MyContext)
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
+    const navigate = useNavigate()
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
     const handleClose = () => {
         setAnchorEl(null);
     };
-    const { setOpenCartModal, isLogin } = useContext(MyContext)
+    const logout = () => {
+        setAnchorEl(null);
+        fetchDataFromApi(`/api/user/logout?token=${localStorage.getItem("accessToken")}`, { withCredentials: true }).then((res) => {
+            if (res?.error === false) {
+                setIsLogin(false)
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("refreshToken");
+                // localStorage.removeItem("actionType")
+                navigate('/')
+            }
+
+        })
+    }
+
     return (
         <header className="bg-white">
             <div className="top-strip py-2">
@@ -62,7 +78,7 @@ const Header = () => {
                     <div className="col2 w-[35%] flex items-center pl-5">
                         <ul className="flex items-center justify-end gap-2 w-full">
                             {
-                                isLogin === true ? <li className="list-none">
+                                isLogin === false ? <li className="list-none">
 
                                     <Link to="/login" className="hover:text-linkHover transition text-[15px] font-[500]">Login</Link> / <Link to="/register" className="hover:text-linkHover transition text-[15px] font-[500]">Register</Link>
                                 </li> :
@@ -70,8 +86,8 @@ const Header = () => {
                                         <Button onClick={handleClick} className="myAccountWrap flex items-center gap-3 cursor-pointer ">
                                             <Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-[#f1f1f1]"><FaRegUser className="text-[16px] text-[#000]" /></Button>
                                             <div className="info flex flex-col">
-                                                <h4 className="text-[14px] font-bold text-[rgba(0,0,0,0.7)] mb-0 text-left justify-start leading-4">Abdul Aziz</h4>
-                                                <span className="text-[11px] text-left justify-start">merndevelpler@gmail.com</span>
+                                                <h4 className="text-[14px] font-bold text-[rgba(0,0,0,0.7)] mb-0 text-left justify-start leading-4">{userData?.name}</h4>
+                                                <span className="text-[11px] text-left justify-start">{userData?.email}</span>
 
                                             </div>
                                         </Button>
@@ -114,24 +130,24 @@ const Header = () => {
                                             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                                         >
                                             <Link to='/my-account'>
-                                            <MenuItem onClick={handleClose} className="flex gap-2 !py-2">
-                                                <FaRegUser className="text-[16px]"/> <span className="text-[14px]">My account</span>
-                                            </MenuItem></Link>
-                                             <Link to='/my-list'>
-                                            <MenuItem onClick={handleClose} className="flex gap-2 !py-2">
-                                                <IoMdHeart  className="text-[16px]"/> <span className="text-[14px]">My Lists</span>
-                                            </MenuItem>
+                                                <MenuItem onClick={handleClose} className="flex gap-2 !py-2">
+                                                    <FaRegUser className="text-[16px]" /> <span className="text-[14px]">My account</span>
+                                                </MenuItem></Link>
+                                            <Link to='/my-list'>
+                                                <MenuItem onClick={handleClose} className="flex gap-2 !py-2">
+                                                    <IoMdHeart className="text-[16px]" /> <span className="text-[14px]">My Lists</span>
+                                                </MenuItem>
                                             </Link>
                                             <Link to='/my-orders'>
-                                            <MenuItem onClick={handleClose} className="flex gap-2 !py-2">
-                                                <BsFillBagCheckFill  className="text-[16px]"/> <span className="text-[14px]">Orders</span>
-                                            </MenuItem>
+                                                <MenuItem onClick={handleClose} className="flex gap-2 !py-2">
+                                                    <BsFillBagCheckFill className="text-[16px]" /> <span className="text-[14px]">Orders</span>
+                                                </MenuItem>
                                             </Link>
-                                           
+
                                             <Link to='/logout'>
-                                            <MenuItem onClick={handleClose} className="flex gap-2 !py-2">
-                                                <IoIosLogOut className="text-[16px]" /> <span className="text-[14px]">Logout</span>
-                                            </MenuItem>
+                                                <MenuItem onClick={logout} className="flex gap-2 !py-2">
+                                                    <IoIosLogOut className="text-[16px]" /> <span className="text-[14px]">Logout</span>
+                                                </MenuItem>
                                             </Link>
                                         </Menu>
                                     </>

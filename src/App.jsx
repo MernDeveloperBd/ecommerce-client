@@ -12,7 +12,7 @@ import { IoCloseSharp } from "react-icons/io5";
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
-import { createContext, useState } from 'react'
+import { createContext, useEffect, useState } from 'react'
 import ProductZoom from './components/ProductZoom/ProductZoom'
 import ProductDetailsContent from './components/ProductDetailsContent/ProductDetailsContent'
 import Login from './components/Pages/Login/Login'
@@ -26,6 +26,7 @@ import Checkout from './components/Checkout/Checkout'
 import MyAccount from './components/Pages/MyAccount/MyAccount'
 import MyList from './components/MyList/MyLIst'
 import Orders from './components/Pages/Orders/Orders'
+import { fetchDataFromApi } from './utils/api'
 
 
 export const MyContext = createContext()
@@ -33,8 +34,9 @@ function App() {
   const [openProductDetailsModal, setOpenProductDetailsModal] = useState(false);
   const [maxWidth, setMaxWidth] = useState('md');
   const [fullWidth, setFullWidth] = useState(true);
-  const[isLogin, setIsLogin] = useState(false);
-  
+  const [isLogin, setIsLogin] = useState(false);
+  const [userData, setUserData] = useState(null);
+
 
   // Cart
   const [openCartModal, setOpenCartModal] = useState(false);
@@ -46,19 +48,42 @@ function App() {
   const handleCloseModal = () => {
     setOpenProductDetailsModal(false);
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token !== undefined && token !== null && token !== "") {
+      setIsLogin(true)
+      // user details
+      //`/api/user/user-details?token=${token}`
+      fetchDataFromApi(`/api/user/user-details`).then((res) => {
+        setUserData(res?.data)
+        if (res?.response?.data?.error === true) {
+          if (res?.response?.data?.message == 'You have got login') {
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            openAlertBox("error", "Your session is closed. please login again")
+            setIsLogin(false)
+          }
+        }
+
+
+      })
+    } else {
+      setIsLogin(false)
+    }
+  }, [setIsLogin])
+
   // alert box
-  const openAlertBox = (status, msg) =>{
-    console.log(status);
-    
-    if(status === "success"){
+  const openAlertBox = (status, msg) => {
+    if (status === "success") {
       toast.success(msg)
     }
-    if(status === "error"){
+    if (status === "error") {
       toast.error(msg)
     }
   }
 
-  const values = { setOpenProductDetailsModal,openCartModal,toggleCartModal, setOpenCartModal, openAlertBox, isLogin, setIsLogin}
+  const values = { setOpenProductDetailsModal, openCartModal, toggleCartModal, setOpenCartModal, openAlertBox, isLogin, setIsLogin, userData, setUserData }
 
   return (
     <>
@@ -72,21 +97,21 @@ function App() {
               <Route path={'/productDetails/:id'} exact={true} element={<ProductDetails />} />
               <Route path={'/login'} exact={true} element={<Login />} />
               <Route path={'/register'} exact={true} element={<Register />} />
-              <Route path={'/cart'} exact={true} element={<Cart/> } />
-              <Route path={'/verify'} exact={true} element={<Verify/> } />
-              <Route path={'/forgotPassword'} exact={true} element={<ForgotPassword/> } />
-              <Route path={'/checkout'} exact={true} element={<Checkout/> } />
-              <Route path={'/my-account'} exact={true} element={<MyAccount/> } />
-              <Route path={'/my-list'} exact={true} element={<MyList/> } />
-              <Route path={'/my-orders'} exact={true} element={<Orders/> } />
-             
+              <Route path={'/cart'} exact={true} element={<Cart />} />
+              <Route path={'/verify'} exact={true} element={<Verify />} />
+              <Route path={'/forgot-Password'} exact={true} element={<ForgotPassword />} />
+              <Route path={'/checkout'} exact={true} element={<Checkout />} />
+              <Route path={'/my-account'} exact={true} element={<MyAccount />} />
+              <Route path={'/my-list'} exact={true} element={<MyList />} />
+              <Route path={'/my-orders'} exact={true} element={<Orders />} />
+
             </Routes>
           </div>
           <Footer />
         </MyContext.Provider>
       </BrowserRouter>
       <Toaster />
-      
+
       {/* modal */}
       <Dialog
         open={openProductDetailsModal}
@@ -111,7 +136,7 @@ function App() {
         </DialogContent>
 
       </Dialog>
-     
+
 
     </>
   )

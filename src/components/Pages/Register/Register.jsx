@@ -3,7 +3,7 @@ import TextField from '@mui/material/TextField';
 import { useContext, useState } from 'react';
 import { FaEyeSlash } from "react-icons/fa";
 import { FaEye } from 'react-icons/fa6';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FcGoogle } from "react-icons/fc";
 import { postData } from '../../../utils/api';
 import { MyContext } from '../../../App';
@@ -19,6 +19,8 @@ const Register = () => {
         email: "",
         password: ""
     });
+    const navigate = useNavigate();
+    
     const onChangeInput = (e) => {
         const { name, value } = e.target;
         setFormFields(() => {
@@ -47,19 +49,21 @@ const Register = () => {
         postData("/api/user/register", formFields)
             .then((res) => {
                 console.log(res);
-                if(res?.error !== true){
+                if (res?.error !== true) {
                     setIsLoading(false);
                     openAlertBox("success", res?.message)
-                setFormFields({
-                    name: "",
-                    email: "",
-                    password: ""
-                })
-                }else{
+                    localStorage.setItem("userEmail", formFields.email)
+                    navigate('/verify')
+                    setFormFields({
+                        name: "",
+                        email: "",
+                        password: ""
+                    })
+                } else {
                     openAlertBox("error", res?.message)
                     setIsLoading(false)
-                }              
-                
+                }
+
             })
     }
 
@@ -74,21 +78,21 @@ const Register = () => {
                             <TextField type='text' id="name" name='name' value={formFields.name} disabled={isLoading === true ? true : false} label="name *" variant="outlined" className='w-full' onChange={onChangeInput} />
                         </div>
                         <div className="form-group w-full mb-5">
-                            <TextField type='email' name='email' value={formFields.email} disabled={isLoading === true ? true : false}  id="email" label="Email *" variant="outlined" className='w-full' onChange={onChangeInput} />
+                            <TextField type='email' name='email' value={formFields.email} disabled={isLoading === true ? true : false} id="email" label="Email *" variant="outlined" className='w-full' onChange={onChangeInput} />
                         </div>
                         <div className="form-group w-full mb-2 relative">
-                            <TextField type={`${showPassword ? "text" : "password"}`} id="password" name='password' value={formFields.password} disabled={isLoading === true ? true : false}  label="Password *" variant="outlined" className='w-full' onChange={onChangeInput} />
+                            <TextField type={`${showPassword ? "text" : "password"}`} id="password" name='password' value={formFields.password} disabled={isLoading === true ? true : false} label="Password *" variant="outlined" className='w-full' onChange={onChangeInput} />
                             <Button className='!text-black !text-[20px] !absolute top-[10px] right-[10px] z-50 !w-[35px] !h-[35px] !min-w-[35px] !rounded-full' onClick={() => setShowPassword(!showPassword)}>{showPassword ? <FaEyeSlash /> : <FaEye />}</Button>
                         </div>
                         <Link className='link text-[14px] font-[500]'>Forgot Password?</Link>
                         <div className='flex items-center w-full mt-3'>
                             <Button type='submit' disabled={!validValue} className={`${!validValue ? '!bg-gray-800 cursor-not-allowed' : '!bg-primary hover:!bg-sky-600'
                                 } !text-white !w-full flex gap-3`}>
-                                    {
-                                        isLoading === true ? <CircularProgress className='reg_loading' color="inherit" />: 'Register'
-                                    }
-                                     
-                                    </Button>
+                                {
+                                    isLoading === true ? <CircularProgress className='reg_loading' color="inherit" /> : 'Register'
+                                }
+
+                            </Button>
                         </div>
                         <p className='mt-3 text-center'>Already have an account? <Link to={'/login'} className='link text-[14px] font-[600]'>Login</Link></p>
                         <p className='mt-3 text-center font-[500]'>Or Continue with Social account</p>
