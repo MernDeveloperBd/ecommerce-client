@@ -1,4 +1,4 @@
-import { useContext,  useState } from "react";
+import { useContext, useState } from "react";
 import OtpInput from "../../OtpInput/OtpInput";
 import { Button } from "@mui/material";
 import { postData } from "../../../utils/api";
@@ -9,47 +9,57 @@ import { MyContext } from "../../../App";
 const Verify = () => {
     const { openAlertBox } = useContext(MyContext)
     const [otp, setOtp] = useState("")
+    const [isLoading, setIsLoading] = useState(false);
     const handleOtpChange = (value) => {
         setOtp(value)
     };
     const navigate = useNavigate()
 
-    
+
     const verifyOTP = (e) => {
         e.preventDefault();
-        const actionType = localStorage.getItem('actionType');
-        if (actionType !== 'forgot-password') {
-            postData("/api/user/verifyEmail", {
-                email: localStorage.getItem("userEmail"),
-                otp: otp
-            }).then((res) => {
-                if (res?.error === false) {
-                    openAlertBox("success", res?.message)
-                    localStorage.removeItem("userEmail")
-                    navigate('/login')
-                }
-                else {
-                    openAlertBox("error", res?.message)
-                }
+        if (otp !== "") {
+            setIsLoading(true)
+            const actionType = localStorage.getItem('actionType');
+            if (actionType !== 'forgot-password') {
+                postData("/api/user/verifyEmail", {
+                    email: localStorage.getItem("userEmail"),
+                    otp: otp
+                }).then((res) => {
+                    if (res?.error === false) {
+                        openAlertBox("success", res?.message)
+                        localStorage.removeItem("userEmail")
+                         setIsLoading(false)
+                        navigate('/login')
+                    }
+                    else {
+                        openAlertBox("error", res?.message)
+                        setIsLoading(false)
+                    }
 
-            })
-        }
-        else{
-            postData("/api/user/verify-forgot-password-otp", {
-                email: localStorage.getItem("userEmail"),
-                otp: otp
-            }).then((res) => {
-                if (res?.error === false) {
-                    openAlertBox("success", res?.message)
-                    navigate('/forgot-password')
-                }
-                else {
-                    openAlertBox("error", res?.message)
-                }
+                })
+            }
+            else {
+                postData("/api/user/verify-forgot-password-otp", {
+                    email: localStorage.getItem("userEmail"),
+                    otp: otp
+                }).then((res) => {
+                    if (res?.error === false) {
+                        openAlertBox("success", res?.message)
+                        navigate('/forgot-password')
+                    }
+                    else {
+                        openAlertBox("error", res?.message)
+                        setIsLoading(false)
+                    }
 
-            })
+                })
+            }
         }
-      }
+        else {
+            openAlertBox("error", "Please enter OTP")
+        }
+    }
     return (
         <section className="section py-5">
             <div className="container">

@@ -53,20 +53,18 @@ function App() {
     const token = localStorage.getItem("accessToken");
     if (token !== undefined && token !== null && token !== "") {
       setIsLogin(true)
-      // user details
-      //`/api/user/user-details?token=${token}`
+      
       fetchDataFromApi(`/api/user/user-details`).then((res) => {
         setUserData(res?.data)
-        if (res?.response?.data?.error === true) {
+         if (res?.response?.data?.error === true) {
           if (res?.response?.data?.message == 'You have got login') {
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
             openAlertBox("error", "Your session is closed. please login again")
+            window.location.href='/login'
             setIsLogin(false)
           }
-        }
-
-
+        } 
       })
     } else {
       setIsLogin(false)

@@ -5,20 +5,28 @@ import AccountSideBar from "../../AccountSidebar/AccountSideBar";
 import { useContext, useEffect, useState } from "react";
 import { MyContext } from "../../../App";
 import { useNavigate } from "react-router-dom";
-import { editData } from "../../../utils/api";
-
+import { editData, postData } from "../../../utils/api";
+import {Collapse} from 'react-collapse';
 
 
 const MyAccount = () => {
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoading2, setIsLoading2] = useState(false);
     const [userId, setUserId] = useState("");
+    const[isChangePasswordFormShow, setIsChangePasswordFromShow] = useState(false)
 
     const [formFields, setFormFields] = useState({
         name: '',
         email: '',
         mobile: ''
     });
-    const { isLogin, setIsLogin, userData, openAlertBox } = useContext(MyContext);
+    const [changePassword, setChangePassword] = useState({
+        email:'',
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+    });
+    const { isLogin, userData, openAlertBox } = useContext(MyContext);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -36,14 +44,23 @@ const MyAccount = () => {
                 email: userData?.email,
                 mobile: userData?.mobile
             })
+            setChangePassword({
+                email: userData?.email
+            })
         }
-    }, [userData?._id, userData?.name, userData?.email, userData?.mobile])
+    }, [userData])
 
     const onChangeInput = (e) => {
         const { name, value } = e.target;
         setFormFields(() => {
             return {
                 ...formFields,
+                [name]: value
+            }
+        })
+        setChangePassword(() => {
+            return {
+                ...changePassword,
                 [name]: value
             }
         })
@@ -80,8 +97,8 @@ const MyAccount = () => {
                     /* localStorage.setItem("accessToken", res?.data?.accessToken);
                     localStorage.setItem("refreshToken", res?.data?.refreshToken);
                     localStorage.removeItem("actionType") */
-                   /*  setIsLogin(true)
-                    setIsLoading(false) */
+                    /*  setIsLogin(true)
+                     setIsLoading(false) */
                 } else {
                     openAlertBox("error", res?.data?.message)
                     setIsLoading(false)
@@ -89,7 +106,41 @@ const MyAccount = () => {
 
             })
     }
+    // Change password
+    // const validValue2 = Object.values(changePassword).every(e1 => e1)
+    const handleSubmitChangePassword = async(e) => {
+        e.preventDefault();
+        setIsLoading2(true)
 
+        if (changePassword.oldPassword === "") {
+            openAlertBox('error', "Please enter Old Password")
+            return false
+        }
+        if (changePassword.newPassword === "") {
+            openAlertBox('error', "Please enter New Password")
+            return false
+        }
+        if (changePassword.confirmPassword === "") {
+            openAlertBox('error', "Please enter Confirm Password")
+            return false
+        }
+        if (changePassword.confirmPassword !== changePassword.newPassword) {
+            openAlertBox('error', "Password not matche")
+            return false
+        }
+          await postData(`/api/user/reset-password`, changePassword, { withCredentials: true })
+            .then((res) => {
+                if (res?.error !== true) {
+                    setIsLoading2(false);
+                    openAlertBox("success", res?.message)
+                    navigate('/')
+                } else {
+                    openAlertBox("error", res?.message)
+                    setIsLoading2(false)
+                }
+
+            })
+    }
 
     return (
         <section className="py-10 w-full">
@@ -101,7 +152,10 @@ const MyAccount = () => {
                 {/*  right*/}
                 <div className="col2 w-[50%]">
                     <div className="card bg-white p-5 shadow-md rounded-md">
-                        <h2 className="text-lg font-semibold pb-3">My Profile</h2>
+                        <div className="flex items-center pb-3">
+                            <h2 className="text-lg font-semibold pb-0">My Profile</h2>
+                            <Button className="!ml-auto" onClick={()=>setIsChangePasswordFromShow(!isChangePasswordFormShow)}>Change Password</Button>
+                        </div>
                         <hr />
                         <form className="mt-5" onSubmit={handleSubmit}>
                             <div className="flex items-center gap-5 mb-5">
@@ -136,6 +190,7 @@ const MyAccount = () => {
                                     <TextField
                                         id="mobile"
                                         label="Phone Number"
+                                        placeholder="Start with +880"
                                         name='mobile'
                                         value={formFields.mobile}
                                         disabled={isLoading === true ? true : false}
@@ -147,19 +202,75 @@ const MyAccount = () => {
 
                             </div>
                             <div className="flex items-center gap-4">
-                                <Button type="submit" disabled={!validValue} className={`${!validValue ? '!bg-gray-800 cursor-not-allowed' : '!bg-green-600 hover:!bg-green-700 !text-white !w-[130px]'} !text-white  flex gap-3`} >
+                                <Button type="submit" disabled={!validValue} className={`${!validValue ? '!bg-gray-800 cursor-not-allowed' : '!bg-green-600 hover:!bg-green-700 !text-white !w-[140px]'} !text-white  flex gap-3`} >
                                     {
-                                        isLoading === true ? <CircularProgress className='reg_loading' color="inherit" /> : <span className="text-[13px] w-[130px]">Update Profile</span>
+                                        isLoading === true ? <CircularProgress className='reg_loading' color="inherit" /> : <span className="text-[13px] w-[140px]">Update Profile</span>
                                     }
                                 </Button>
-                                {/* <Button className="bg-btn hover:bg-btn w-[100px] !text-[12px]">
-                                    {
-                                        isLoading === true ? <CircularProgress className='reg_loading' color="inherit" /> : 'Cancel'
-                                    }
-                                </Button> */}
                             </div>
                         </form>
                     </div>
+                    {/* Change password */}
+                    
+                       
+                        <Collapse isOpened={isChangePasswordFormShow}>
+                        <div className="card bg-white mt-4 p-5 shadow-md rounded-md">
+                        <div className="flex items-center pb-1">
+                            <Button className="pb-0">Change Password</Button>
+                        </div>
+                        <hr />
+                        <form className="mt-5" onSubmit={handleSubmitChangePassword}>
+                            <div className="flex items-center gap-5 mb-5">
+                                <div className="w-[50%]">
+                                    <TextField
+                                        id="oldPassword"
+                                        label="old password"
+                                        name='oldPassword'
+                                        size="small"
+                                        variant="outlined"
+                                        className="w-full"
+                                        disabled={isLoading2 === true ? true : false}
+                                        value={changePassword.oldPassword}
+                                        onChange={onChangeInput} />
+                                </div>
+                                <div className="w-[50%]">
+                                    <TextField
+                                        type='text'
+                                        id="newPassword"
+                                        label="New Password"
+                                        variant="outlined"
+                                        size="small"
+                                        className='w-full'
+                                         disabled={isLoading2 === true ? true : false}
+                                        name='newPassword'
+                                        value={changePassword.newPassword}
+                                        onChange={onChangeInput} />
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-5 mb-5">
+                                <div className="w-[50%]">
+                                    <TextField
+                                        id="confirmPassword"
+                                        label="Confirm Password"
+                                        variant="outlined"
+                                        size="small"
+                                        className="w-full"
+                                        name='confirmPassword'
+                                         disabled={isLoading2 === true ? true : false}
+                                        value={changePassword.confirmPassword}
+                                        onChange={onChangeInput} />
+                                </div>
+
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <Button type="submit" className={`cursor-not-allowed !bg-red-600 hover:!bg-red-700 !text-white '} !text-white  flex gap-3`} >
+                                    Change Password
+                                </Button>
+                            </div>
+                        </form>
+                    </div>
+                    </Collapse>
+                    
                 </div>
             </div>
         </section>

@@ -23,13 +23,13 @@ const Login = () => {
         if (formFields.email === "") {
             openAlertBox('error', "Please enter your email first")
             return false;
-        } 
+        }
         else {
             openAlertBox('success', `OTP Send to ${formFields.email}`)
             localStorage.setItem("userEmail", formFields.email)
             localStorage.setItem("actionType", 'forgot-password')
             //
-          postData("/api/user/forgot-password", {
+            postData("/api/user/forgot-password", {
                 email: formFields.email,
 
             }).then((res) => {
@@ -96,7 +96,15 @@ const Login = () => {
                     <h3 className="text-center text-[20px]">Login to your account</h3>
                     <form className='w-full mt-5' onSubmit={handleSubmit}>
                         <div className="form-group w-full mb-5">
-                            <TextField type='email' id="email" name='email' value={formFields.email} disabled={isLoading === true ? true : false} label="Email *" variant="outlined" className='w-full' onChange={onChangeInput} />
+                            <TextField type='email'
+                                id="email"
+                                label="Email *"
+                                variant="outlined"
+                                className='w-full'
+                                name='email'
+                                value={formFields.email}
+                                disabled={isLoading === true ? true : false}
+                                onChange={onChangeInput} />
                         </div>
                         <div className="form-group w-full mb-2 relative">
                             <TextField type={`${showPassword ? "text" : "password"}`} id="password" name='password' value={formFields.password} disabled={isLoading === true ? true : false} label="Password *" variant="outlined" className='w-full' onChange={onChangeInput} />

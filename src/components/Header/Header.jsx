@@ -34,7 +34,7 @@ const Header = () => {
                 setIsLogin(false)
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("refreshToken");
-                // localStorage.removeItem("actionType")
+                localStorage.removeItem("actionType")
                 navigate('/')
             }
 

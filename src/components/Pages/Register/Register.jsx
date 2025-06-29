@@ -5,7 +5,7 @@ import { FaEyeSlash } from "react-icons/fa";
 import { FaEye } from 'react-icons/fa6';
 import { Link, useNavigate } from 'react-router-dom';
 import { FcGoogle } from "react-icons/fc";
-import { postData } from '../../../utils/api';
+import { postData } from '../../../utils/api.js';
 import { MyContext } from '../../../App';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -36,15 +36,15 @@ const Register = () => {
         setIsLoading(true)
         if (formFields.name === "") {
             openAlertBox('error', "Please enter full name")
-            return false
+            return 
         }
         if (formFields.email === "") {
             openAlertBox('error', "Please enter your email")
-            return false
+            return 
         }
         if (formFields.password === "") {
             openAlertBox('error', "Please enter your password")
-            return false
+            return 
         }
         postData("/api/user/register", formFields)
             .then((res) => {
@@ -75,7 +75,14 @@ const Register = () => {
                     <h3 className="text-center text-[20px]">Register to your account</h3>
                     <form className='w-full mt-5' onSubmit={handleSubmit}>
                         <div className="form-group w-full mb-5">
-                            <TextField type='text' id="name" name='name' value={formFields.name} disabled={isLoading === true ? true : false} label="name *" variant="outlined" className='w-full' onChange={onChangeInput} />
+                            <TextField
+                             type='text'
+                              id="name"
+                               name='name' 
+                            value={formFields.name}
+                             disabled={isLoading === true ? true : false}
+                             label="name *"
+                              variant="outlined" className='w-full' onChange={onChangeInput} />
                         </div>
                         <div className="form-group w-full mb-5">
                             <TextField type='email' name='email' value={formFields.email} disabled={isLoading === true ? true : false} id="email" label="Email *" variant="outlined" className='w-full' onChange={onChangeInput} />

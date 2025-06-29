@@ -50,14 +50,14 @@ const ForgotPassword = () => {
             return false
         }
         postData(`/api/user/reset-password`, formFields).then((res) => {
-            if(res?.error === false){
+            if (res?.error === false) {
                 localStorage.removeItem("userEmail")
-            localStorage.removeItem("actionType")
-            setIsLoading(false)
-            openAlertBox('success', res?.message)
-            navigate('/login')
+                localStorage.removeItem("actionType")
+                setIsLoading(false)
+                openAlertBox('success', res?.message)
+                navigate('/login')
             }
-            else{
+            else {
                 openAlertBox('error', res?.message)
             }
         })
@@ -73,11 +73,17 @@ const ForgotPassword = () => {
                     <h3 className="text-center text-[20px]">Forgot password</h3>
                     <form className='w-full mt-5' onSubmit={handleSubmit}>
                         <div className="form-group w-full mb-5 relative">
-                            <TextField type={`${showPassword ? "text" : "password"}`} id="password" name='newPassword' value={formFields.newPassword} disabled={isLoading === true ? true : false} label="newPassword *" variant="outlined" className='w-full' onChange={onChangeInput} />
+                            <TextField type={`${showPassword ? "text" : "password"}`} id="newPassword" name='newPassword'
+                                label="newPassword *"
+                                variant="outlined"
+                                className='w-full'
+                                value={formFields.newPassword}
+                                disabled={isLoading === true ? true : false}
+                                onChange={onChangeInput} />
                             <Button className='!text-black !text-[20px] !absolute top-[10px] right-[10px] z-50 !w-[35px] !h-[35px] !min-w-[35px] !rounded-full' onClick={() => setShowPassword(!showPassword)}>{showPassword ? <FaEyeSlash /> : <FaEye />}</Button>
                         </div>
                         <div className="form-group w-full mb-2 relative">
-                            <TextField type={`${showConfirmPassword ? "text" : "password"}`} id="confirm_password" name='confirmPassword' value={formFields.confirmPassword} disabled={isLoading === true ? true : false} label="confrim New Password *" variant="outlined" className='w-full' onChange={onChangeInput} />
+                            <TextField type={`${showConfirmPassword ? "text" : "password"}`} id="confirmPassword" name='confirmPassword' value={formFields.confirmPassword} disabled={isLoading === true ? true : false} label="confrim New Password *" variant="outlined" className='w-full' onChange={onChangeInput} />
                             <Button className='!text-black !text-[20px] !absolute top-[10px] right-[10px] z-50 !w-[35px] !h-[35px] !min-w-[35px] !rounded-full' onClick={() => setShowConfirmPassword(!showConfirmPassword)}>{showConfirmPassword ? <FaEyeSlash /> : <FaEye />}</Button>
                         </div>
                         <div type="submit" className='flex items-center w-full mt-3'>
