@@ -1,135 +1,138 @@
 import { Button } from '@mui/material';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { FaRegSquarePlus, FaRegSquareMinus } from "react-icons/fa6";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { MyContext } from '../../App';
 
 const CategoryCollapse = () => {
-     const [subMenuIndex, setSubMenuIndex] = useState(null)
-  const [innerSubMenuIndex, seetInnerSubMenuIndex] = useState(null)
+  const { catData } = useContext(MyContext);
+  const [openMenu, setOpenMenu] = useState(null);
+  const [openSubMenu, setOpenSubMenu] = useState(null);
+  const navigate = useNavigate();
 
-  
+  const toggleMenu = (index) => {
+    setOpenMenu(openMenu === index ? null : index);
+    setOpenSubMenu(null); // parent বদলালে inner submenu রিসেট
+  };
 
-    const openSubmenu = (index) => {
-    if (subMenuIndex === index) {
-      setSubMenuIndex(null)
-    } else {
-      setSubMenuIndex(index)
-    }
-  }
-  // Inner submenu
-  const openInnerSubmenu = (index) => {
-    if (innerSubMenuIndex === index) {
-      seetInnerSubMenuIndex(null)
-    } else {
-      seetInnerSubMenuIndex(index)
-    }
-  }
-    return (
-        <div>
-            <div className='scroll'>
-        {/* menu */}
-        <ul className='w-full px-2 space-y-1'>
-          {/* Fashion */}
-          <li className='list-none flex items-center relative flex-col'>
-            <Button onClick={() => openSubmenu(0)} className='w-full text-left !justify-start !px-3 !text-black'>ফ্যাশন</Button>
-            {
-              subMenuIndex === 0 ? <FaRegSquareMinus className='absolute top-[10px] right-[15px] cursor-pointer' onClick={() => openSubmenu(0)} /> :
-                <FaRegSquarePlus className='absolute top-[10px] right-[15px] cursor-pointer' onClick={() => openSubmenu(0)} />
-            }
+  const toggleSubMenu = (index) => {
+    setOpenSubMenu(openSubMenu === index ? null : index);
+  };
 
-            {/* Submenu */}
-            {
-              subMenuIndex === 0 && <ul className='subMenu  w-full pl-3 space-y-1 mt-1'>
-                <li className='list-none relative  space-y-1'>
-                  <Button   className='w-full text-left !justify-start !px-3 !text-black'>পোশাক</Button>
-                  {
-                    innerSubMenuIndex === 0 ? <FaRegSquareMinus className='absolute top-[6px] right-[15px] cursor-pointer' onClick={() => openInnerSubmenu(0)} /> : <FaRegSquarePlus className='absolute top-[6px] right-[15px] cursor-pointer' onClick={() => openInnerSubmenu(0)} />
-                  }
+  const buildListUrl = (q) => {
+    const params = new URLSearchParams();
+    if (q.cat) params.set("cat", q.cat);
+    if (q.sub) params.set("sub", q.sub);
+    if (q.third) params.set("third", q.third);
+    return `/productListing?${params.toString()}`;
+  };
 
+  return (
+    <div className="scroll max-h-[72vh] overflow-y-auto rounded-2xl border border-gray-200 bg-white/70 p-2 shadow-sm">
+  <ul className="w-full px-1 space-y-2">
+    {catData.map((menu, i) => (
+      <li key={menu._id} className="list-none relative">
+        <div
+          className={`group relative rounded-xl ring-1 shadow-sm transition-all ${
+            openMenu === i
+              ? 'bg-sky-50/50 ring-sky-200'
+              : 'bg-white/90 ring-gray-200 hover:bg-sky-50/30 hover:ring-sky-100'
+          }`}
+        >
+          {/* Parent Category */}
+          <Button
+            onClick={() => navigate(buildListUrl({ cat: menu._id }))}
+            className="w-full !justify-start !px-3.5 !py-2.5 !text-slate-800 !font-semibold !normal-case !rounded-xl"
+          >
+            <span className="inline-flex items-center gap-2">
+              {/* tiny icon */}
+              <svg width="14" height="14" viewBox="0 0 24 24" className="text-sky-600">
+                <path d="M3 7h18M7 7v10m10-10v10M5 17h14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
+              <span className="truncate">{menu.name}</span>
+            </span>
+          </Button>
 
-                  {/* sub sub menu */}
-                  {
-                    innerSubMenuIndex === 0 && <ul className='inner_SubMenu w-full px-2 space-y-1  '>
-                      <li className='list-none relative mt-2 '>                        
-                          <Link to={'/paijama'}  className='w-full text-left !justify-start !px-3 !text-black '><Button className='w-full text-left !justify-start !px-3 !text-black '>পাঞ্জাবী</Button></Link>
-                      </li>
-                      <li className='list-none relative mt-2 '>                        
-                          <Link to={'/paijama'}  className='w-full text-left !justify-start !px-3 !text-black'><Button className='w-full text-left !justify-start !px-3 !text-black'>পায়জামা</Button></Link>
-                      </li>                      
+          {/* Expand/Collapse for Parent */}
+          {openMenu === i ? (
+            <FaRegSquareMinus
+              aria-label="Collapse"
+              className="absolute top-2.5 right-2.5 h-6 w-6 p-1.5 rounded-md bg-white text-slate-600 ring-1 ring-gray-200 shadow-sm cursor-pointer hover:bg-sky-50 hover:text-sky-700"
+              onClick={() => toggleMenu(i)}
+            />
+          ) : (
+            <FaRegSquarePlus
+              aria-label="Expand"
+              className="absolute top-2.5 right-2.5 h-6 w-6 p-1.5 rounded-md bg-white text-slate-600 ring-1 ring-gray-200 shadow-sm cursor-pointer hover:bg-sky-50 hover:text-sky-700"
+              onClick={() => toggleMenu(i)}
+            />
+          )}
+
+          {/* Submenu */}
+          {openMenu === i && menu.children?.length > 0 && (
+            <ul className="relative w-full pl-3.5 pr-2 space-y-1.5 pb-2 mt-1.5 before:content-[''] before:absolute before:left-2 before:top-2 before:bottom-2 before:w-px before:bg-gray-200">
+              {menu.children.map((submenu, j) => (
+                <li key={submenu._id} className="list-none relative">
+                  <div
+                    className={`relative rounded-lg transition-all ring-1 ${
+                      openSubMenu === j
+                        ? 'bg-sky-50/60 ring-sky-200'
+                        : 'bg-white ring-gray-200 hover:bg-sky-50/40 hover:ring-sky-100'
+                    }`}
+                  >
+                    <Button
+                      onClick={() => navigate(buildListUrl({ cat: menu._id, sub: submenu._id }))}
+                      className="w-full !text-xs !text-slate-700 !justify-start !px-3 !py-2 !normal-case !rounded-lg hover:!text-sky-700"
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <span className="h-1.5 w-1.5 rounded-full bg-sky-300"></span>
+                        <span className="truncate">{submenu.name}</span>
+                      </span>
+                    </Button>
+
+                    {/* Expand/Collapse Sub */}
+                    {openSubMenu === j ? (
+                      <FaRegSquareMinus
+                        aria-label="Collapse"
+                        className="absolute top-1.5 right-2 h-6 w-6 p-1.5 rounded-md bg-white text-slate-600 ring-1 ring-gray-200 shadow-sm cursor-pointer hover:bg-sky-50 hover:text-sky-700"
+                        onClick={() => toggleSubMenu(j)}
+                      />
+                    ) : (
+                      <FaRegSquarePlus
+                        aria-label="Expand"
+                        className="absolute top-1.5 right-2 h-6 w-6 p-1.5 rounded-md bg-white text-slate-600 ring-1 ring-gray-200 shadow-sm cursor-pointer hover:bg-sky-50 hover:text-sky-700"
+                        onClick={() => toggleSubMenu(j)}
+                      />
+                    )}
+                  </div>
+
+                  {/* Inner Submenu */}
+                  {openSubMenu === j && submenu.children?.length > 0 && (
+                    <ul className="relative w-full pl-4 pr-1 space-y-1.5 mt-2 before:content-[''] before:absolute before:left-3 before:top-0.5 before:bottom-0.5 before:w-px before:bg-gray-200">
+                      {submenu.children.map((inner, k) => (
+                        <li key={inner._id} className="list-none">
+                          <Link to={buildListUrl({ cat: menu._id, sub: submenu._id, third: inner._id })}>
+                            <Button className="w-full !text-xs !justify-start !px-3 !py-1.5 !text-slate-700 !normal-case !rounded-md hover:!bg-indigo-50 hover:!text-indigo-700 !bg-white ring-1 ring-gray-200 hover:ring-indigo-200 transition">
+                              <span className="inline-flex items-center gap-2">
+                                <span className="h-1.5 w-1.5 rounded-full bg-indigo-300"></span>
+                                <span className="truncate">{inner.name}</span>
+                              </span>
+                            </Button>
+                          </Link>
+                        </li>
+                      ))}
                     </ul>
-                  }
+                  )}
                 </li>
-
-              </ul>
-            }
-
-          </li>
-          {/* Islamic products */}
-          <li className='list-none flex items-center relative flex-col'>
-            <Button onClick={() => openSubmenu(1)} className='w-full text-left !justify-start !px-3 !text-black'>ইসলামিক পন্য</Button>
-            {
-              subMenuIndex === 1 ? <FaRegSquareMinus className='absolute top-[10px] right-[15px] cursor-pointer' onClick={() => openSubmenu(1)} /> :
-                <FaRegSquarePlus className='absolute top-[10px] right-[15px] cursor-pointer' onClick={() => openSubmenu(1)} />
-            }
-
-            {/* Submenu */}
-            {
-              subMenuIndex === 1 && <ul className='subMenu  w-full pl-3 space-y-1 mt-1'>
-                <li className='list-none relative  space-y-1'>
-                  <Button   className='w-full text-left !justify-start !px-3 !text-black'>কিতাব</Button>
-                  {
-                    innerSubMenuIndex === 1 ? <FaRegSquareMinus className='absolute top-[6px] right-[15px] cursor-pointer' onClick={() => openInnerSubmenu(1)} /> : <FaRegSquarePlus className='absolute top-[6px] right-[15px] cursor-pointer' onClick={() => openInnerSubmenu(1)} />
-                  }
-
-
-                  {/* sub sub menu */}
-                  {
-                    innerSubMenuIndex === 1 && <ul className='inner_SubMenu w-full px-2 space-y-1  '>
-                      <li className='list-none relative mt-2 '>                        
-                          <Link to={'/paijama'}  className='w-full text-left !justify-start !px-3 !text-black '><Button className='w-full text-left !justify-start !px-3 !text-black '>বুখারি</Button></Link>
-                      </li>
-                      <li className='list-none relative mt-2 '>                        
-                          <Link to={'/paijama'}  className='w-full text-left !justify-start !px-3 !text-black'><Button className='w-full text-left !justify-start !px-3 !text-black'>মুসলিম</Button></Link>
-                      </li>                      
-                    </ul>
-                  }
-                </li>
-
-              </ul>
-            }
-
-          </li>
-          {/* Fashion end */}
-          {/* ঐতিহ্যবাহী পোশাক 1 */}
-          <li className='list-none flex items-center relative flex-col'>
-            <Button className='w-full text-left !justify-start !px-3 !text-black'>ঐতিহ্যবাহী পোশাক</Button>
-            {
-              subMenuIndex === 2 ? <FaRegSquareMinus className='absolute top-[10px] right-[15px] cursor-pointer' onClick={() => openSubmenu(2)} /> :
-                <FaRegSquarePlus className='absolute top-[10px] right-[15px] cursor-pointer' onClick={() => openSubmenu(2)} />
-            }
-
-            {/* Submenu */}
-            {
-              subMenuIndex === 2 && <ul className='subMenu  w-full pl-3 space-y-1 mt-1'>
-                <li className='list-none relative  space-y-1'>
-                 <Link to={'/gamcha'}> <Button className='w-full text-left !justify-start !px-3 !text-black'>গামছা</Button></Link>
-
-                </li>
-                <li className='list-none relative  space-y-1'>
-                  <Link to={'/lungi'}><Button className='w-full text-left !justify-start !px-3 !text-black'>লুঙ্গী</Button></Link>
-
-                </li>
-
-              </ul>
-            }
-
-          </li>
-          {/* ঐতিহ্যবাহী পোশাক end */}        
-        </ul>
-
-      </div>
+              ))}
+            </ul>
+          )}
         </div>
-    );
+      </li>
+    ))}
+  </ul>
+</div>
+  );
 };
 
 export default CategoryCollapse;

@@ -8,10 +8,10 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#ff5252',
+        primary: '#6D28D9',
         PrimaryText: '#ffffff',
-        linkHover: '#5ab2e1',
-        buttonColor:'#2376ab'
+        linkHover: '#6D28D9',
+        buttonColor:'#6D28D9'
       },
       backgroundColor: {
         primary: '#419fd9'

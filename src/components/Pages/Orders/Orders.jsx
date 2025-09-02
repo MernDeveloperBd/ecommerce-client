@@ -293,7 +293,7 @@ const Orders = () => {
                                                                             02
                                                                         </td>
                                                                         <td className="px-6 py-4">
-                                                                            Dhaka, Dhanmondi, kasdfs
+                                                                            TK 1000
                                                                         </td>
                                                                         <td className="px-6 py-4">
                                                                             Tk 2999
@@ -319,7 +319,7 @@ const Orders = () => {
                                                                             02
                                                                         </td>
                                                                         <td className="px-6 py-4">
-                                                                            Dhaka, Dhanmondi, kasdfs
+                                                                            TK 1200
                                                                         </td>
                                                                         <td className="px-6 py-4">
                                                                             Tk 2999

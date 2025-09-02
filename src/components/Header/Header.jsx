@@ -15,6 +15,8 @@ import MenuItem from '@mui/material/MenuItem';
 import { BsFillBagCheckFill } from "react-icons/bs";
 import { IoIosLogOut, IoMdHeart } from "react-icons/io";
 import { fetchDataFromApi } from "../../utils/api";
+import { FiHelpCircle, FiTruck, FiUser } from "react-icons/fi";
+
 
 const Header = () => {
     const { setOpenCartModal, isLogin, setIsLogin, userData } = useContext(MyContext)
@@ -42,52 +44,128 @@ const Header = () => {
     }
 
     return (
-        <header className="bg-white">
-            <div className="top-strip py-2">
-                <div className="container">
-                    <div className="flex items-center justify-between">
-                        <div className="col1 w-[50%]">
-                            <p className="text-[14px] font-[500px]">Get upto 20% Discount on first buy. Limited time only</p>
-                        </div>
-                        {/* Right side */}
-                        <div className="col2 flex items-center justify-end">
-                            <ul className="flex items-center gap-2">
-                                <li><Link to='/help-center' className="hover:text-linkHover font-[500] text-[13px] transition">Help Center</Link></li>
-                                <li><Link to='/order-tracking' className="hover:text-linkHover font-[500] text-[13px] transition">Order Tracking</Link></li>
-                                <li><Link to='/my-account' className="hover:text-linkHover font-[500] text-[13px] transition">My Account</Link></li>
-                                <li><Link to='/help-center' className="hover:text-linkHover font-[500] text-[13px] transition">Help Center</Link></li>
+        <header className="bg-white sticky -top-[110px] md:-top-[115px] z-50 shadow-md py-1">
+            <div className="top-strip py-1 ">
+                <div className=" ">
+                    <div className="relative bg-gradient-to-r from-gray-50 via-white to-gray-50 text-gray-700 text-xs md:text-sm border-b border-gray-200/70">
+                        <div className="container mx-auto">
+                            <div className="py-1.5 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
 
-                            </ul>
-                        </div>
+                                {/* Left - Offer (md+: half width) */}
+                                <div className="flex items-center gap-2 md:w-1/2 md:pr-3">
 
+                                    {/* Desktop: marquee inside half width */}
+                                    <div className=" relative w-full">
+                                        {/* Fade edges */}
+                                        <span className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-white to-transparent" />
+                                        <span className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-white to-transparent" />
+
+                                        {/* Marquee container */}
+                                        <div className="marq overflow-hidden h-7 flex items-center">
+                                            <div className="marq-track flex items-center gap-8 whitespace-nowrap hover:[animation-play-state:paused]">
+                                                {/* items 1x */}
+                                                <span className="text-gray-600">
+                                                    Get up to <span className="font-semibold text-gray-900">10% discount</span> on first buy.
+                                                    <span className="ml-1 font-medium text-gray-900">Limited time only</span>
+                                                </span>
+                                                {/* আরও লেখা যোগ করুন */}
+                                                <span className="text-gray-600">
+                                                    Use code <span className="font-semibold text-violet-700">WELCOME10</span>
+                                                </span>
+                                                <span className="text-gray-600">
+                                                    Free delivery on orders over <span className="font-semibold text-gray-900">TK 3000</span>
+                                                </span>
+                                                 <span className="text-gray-600">
+                                                    এক প্ল্যাটফর্মে কিনুন  <span className="font-semibold text-gray-900">ও বিক্রি করুন</span>
+                                                </span>
+
+                                                {/* items 2x (continuous loop-এর জন্য duplicate) */}
+                                                <span className="text-gray-600">
+                                                    Get up to <span className="font-semibold text-gray-900">10% discount</span> on first buy.
+                                                    <span className="ml-1 font-medium text-gray-900">Limited time only</span>
+                                                </span>
+                                                <span className="text-gray-600">
+                                                    Use code <span className="font-semibold text-violet-700">WELCOME10</span>
+                                                </span>
+                                                <span className="text-gray-600">
+                                                    Free delivery on orders over <span className="font-semibold text-gray-900">TK 3000</span>
+                                                </span>
+                                               
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Right - Links (md+: half width, right aligned) */}
+                                <div className="w-full md:w-1/2">
+                                    <ul className="flex items-center justify-center md:justify-end gap-2 sm:gap-4 text-center md:text-left">
+                                        <li>
+                                            <Link
+                                                to="/help-center"
+                                                className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors hover:text-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                                            >
+                                                <FiHelpCircle className="text-sm opacity-80" />
+                                                Help Center
+                                            </Link>
+                                        </li>
+
+                                        <li className="hidden sm:block h-4 w-px bg-gray-300/70" aria-hidden="true" />
+
+                                        <li>
+                                            <Link
+                                                to="/order-tracking"
+                                                className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors hover:text-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                                            >
+                                                <FiTruck className="text-sm opacity-80" />
+                                                Order Tracking
+                                            </Link>
+                                        </li>
+
+                                        <li className="hidden sm:block h-4 w-px bg-gray-300/70" aria-hidden="true" />
+
+                                        <li>
+                                            <Link
+                                                to="/my-account"
+                                                className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors hover:text-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                                            >
+                                                <FiUser className="text-sm opacity-80" />
+                                                My Account
+                                            </Link>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
 
                 </div>
             </div>
             {/* menu */}
-            <div className="header py-3 border border-b-[1px]">
-                <div className="container flex items-center justify-between gap-2">
-                    <div className="col1 w-[30%]">
-                        <Link to={'/'}>
-                            <h2 className="text-2xl font-semibold">Haramain <span className="text-primary">Khushbo</span></h2>
+            <div className="header py-1 border border-b-[1px]">
+                <div className="container flex flex-col md:flex-row items-center md:justify-between gap-2">
+                    <div className="col1 md:w-[30%]">
+                        <Link to={'/'} className="flex items-center gap-2">
+                            <img src="https://res.cloudinary.com/dqokqca8p/image/upload/v1756018288/My%20Brand/Misam_Marifa_Fashion_World_jkz3o8.png" alt="logo" className="w-8 md:w-8 h-8 md:h-8 rounded-full" />
+                            <h2 className="!text-sm md:!text-xl !font-semibold">MM Fashion <span className="text-primary">World</span></h2>
                         </Link>
                     </div>
-                    <div className="col2 w-[35%]">
+                    <div className="col2 w-full md:w-[35%]">
                         <Search />
                     </div>
-                    <div className="col2 w-[35%] flex items-center pl-5">
+                    <div className="col2 md:w-[35%] flex items-center pl-0 md:pl-5">
                         <ul className="flex items-center justify-end gap-2 w-full">
                             {
                                 isLogin === false ? <li className="list-none">
 
-                                    <Link to="/login" className="hover:text-linkHover transition text-[15px] font-[500]">Login</Link> / <Link to="/register" className="hover:text-linkHover transition text-[15px] font-[500]">Register</Link>
+                                    <Link to="/login" className="logInReg-link">Login</Link> / <Link to="/register" className="logInReg-link">Register</Link>
                                 </li> :
                                     <>
-                                        <Button onClick={handleClick} className="myAccountWrap flex items-center gap-3 cursor-pointer ">
-                                            <Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-[#f1f1f1]"><FaRegUser className="text-[16px] text-[#000]" /></Button>
+                                        <Button onClick={handleClick} className="myAccountWrap flex items-center gap-2 cursor-pointer ">
+                                            <Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-[#f1f1f1]">{userData ? <img src={userData?.avatar} alt="user_image" className="!w-[35px] !h-[35px] !min-w-[35px] rounded-full object-cover" /> : <FaRegUser className="text-[16px] text-[#000]" />}</Button>
                                             <div className="info flex flex-col">
-                                                <h4 className="text-[14px] font-bold text-[rgba(0,0,0,0.7)] mb-0 text-left justify-start leading-4">{userData?.name}</h4>
-                                                <span className="text-[11px] text-left justify-start">{userData?.email}</span>
+                                                <h4 className="text-[10px] md:text-[12px] font-bold text-[rgba(0,0,0,0.7)] mb-0 text-left justify-start leading-4">{userData?.name}</h4>
+                                                <span className="text-[9px] md:text-[11px] text-left justify-start">{userData?.email}</span>
 
                                             </div>
                                         </Button>
@@ -154,39 +232,41 @@ const Header = () => {
                             }
 
                             <li>|</li>
-                            <li>
-                                <Tooltip title="Compare">
-                                    <IconButton>
-                                        <Stack spacing={4} direction="row" sx={{ color: 'action.active' }}>
-                                            <Badge color="secondary" badgeContent={0} showZero>
-                                                <IoGitCompareSharp className="text-xl" />
-                                            </Badge>
-                                        </Stack>
-                                    </IconButton>
-                                </Tooltip>
-                            </li>
-                            <li>
-                                <Tooltip title="Wishlist">
-                                    <IconButton>
-                                        <Stack spacing={4} direction="row" sx={{ color: 'action.active' }}>
-                                            <Badge color="secondary" badgeContent={0} showZero>
-                                                <FaRegHeart className="text-xl" />
-                                            </Badge>
-                                        </Stack>
-                                    </IconButton>
-                                </Tooltip>
-                            </li>
-                            <li>
-                                <Tooltip title="Cart">
-                                    <IconButton onClick={() => setOpenCartModal(true)}>
-                                        <Stack spacing={4} direction="row" sx={{ color: 'action.active' }}>
-                                            <Badge color="secondary" badgeContent={0} showZero>
-                                                <MdOutlineShoppingCart className="text-xl" />
-                                            </Badge>
-                                        </Stack>
-                                    </IconButton>
-                                </Tooltip>
-                            </li>
+                            <div className="flex flex-wrap md:flex-row">
+                                <li className="hidden md:block">
+                                    <Tooltip title="Compare">
+                                        <IconButton>
+                                            <Stack spacing={2} direction="row" sx={{ color: 'action.active' }}>
+                                                <Badge color="secondary" badgeContent={0} showZero>
+                                                    <IoGitCompareSharp className="text-xl" />
+                                                </Badge>
+                                            </Stack>
+                                        </IconButton>
+                                    </Tooltip>
+                                </li>
+                                <li>
+                                    <Tooltip title="Wishlist">
+                                        <IconButton>
+                                            <Stack spacing={1} direction="row" sx={{ color: 'action.active' }}>
+                                                <Badge color="secondary" badgeContent={2} showZero>
+                                                    <FaRegHeart className="text-xl" />
+                                                </Badge>
+                                            </Stack>
+                                        </IconButton>
+                                    </Tooltip>
+                                </li>
+                                <li>
+                                    <Tooltip title="Cart">
+                                        <IconButton onClick={() => setOpenCartModal(true)}>
+                                            <Stack spacing={1} direction="row" sx={{ color: 'action.active' }}>
+                                                <Badge color="secondary" badgeContent={3} showZero>
+                                                    <MdOutlineShoppingCart className="text-xl" />
+                                                </Badge>
+                                            </Stack>
+                                        </IconButton>
+                                    </Tooltip>
+                                </li>
+                            </div>
                         </ul>
                     </div>
 

@@ -4,14 +4,15 @@ import { BsFillBagCheckFill } from "react-icons/bs";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { FaRegUser } from "react-icons/fa6";
 import { IoIosLogOut, IoMdHeart } from "react-icons/io";
+import { LuMapPinCheck } from "react-icons/lu";
 import { NavLink } from "react-router-dom";
 import { MyContext } from "../../App";
 import CircularProgress from '@mui/material/CircularProgress';
 import { uploadImage } from "../../utils/api";
+
 const AccountSideBar = () => {
     const [preview, setPriview] = useState([]);
-    const [uploading, setUploading] = useState(false);
-    
+    const [uploading, setUploading] = useState(false);    
     const { openAlertBox, userData } = useContext(MyContext);
 
     useEffect(() => {
@@ -22,8 +23,6 @@ const AccountSideBar = () => {
         }
 
     }, [userData?.avatar])
-    let img_arr = [];
-    let uniqueArray = [];
     let selectedImage = [];
     const formData = new FormData();
 
@@ -84,8 +83,8 @@ const AccountSideBar = () => {
                     </div>
                 </div>
 
-                <h3 className="text-lg font-semibold">{userData?.name}</h3>
-                <p className="text-[14px] font-[400]">{userData?.email}</p>
+                <h3 className="text-xs md:text-lg font-semibold">{userData?.name}</h3>
+                <p className="text-[11px] md:text-[14px] font-[400]">{userData?.email}</p>
             </div>
             {/*  */}
             <ul className="list-none pb-5 bg-[#f1f1f1] myAccountTabs">
@@ -93,8 +92,13 @@ const AccountSideBar = () => {
                     <NavLink to='/my-account' exact={true} activeClassName="isActive" >
                         <Button className="w-full flex items-center gap-2 !text-left !py-2 !px-5 !justify-start !rounded-none !text-[rgba(0,0,0,0.7)] !font-[600]"><FaRegUser className="text-[15px]" /> My Profile</Button>
                     </NavLink>
-
                 </li>
+                <li className="w-full">
+                    <NavLink to='/address' exact={true} activeClassName="isActive" >
+                        <Button className="w-full flex items-center gap-2 !text-left !py-2 !px-5 !justify-start !rounded-none !text-[rgba(0,0,0,0.7)] !font-[600]"><LuMapPinCheck className="text-[15px]" /> Address</Button>
+                    </NavLink>
+                </li>
+
                 <li className="w-full">
                     <NavLink to='/my-list' exact={true} activeClassName="isActive" >
                         <Button className="w-full flex items-center gap-2 !text-left !py-2  !px-5 !justify-start !rounded-none !text-[rgba(0,0,0,0.7)] !font-[600]"><IoMdHeart className="text-[15px]" /> My Lists</Button>

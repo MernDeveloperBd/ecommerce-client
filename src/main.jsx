@@ -8,10 +8,10 @@ import App from './App';
 
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  <>
     <HelmetProvider>
       <App />
       <Toaster />
     </HelmetProvider>,
-  </StrictMode>
+  </>
 )

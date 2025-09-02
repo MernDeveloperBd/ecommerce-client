@@ -2,70 +2,93 @@ import axios from "axios";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
-export const postData = async (URL, formData) => {
-    try {
-        const response = await fetch(apiUrl + URL, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        })
-        if (response.ok) {
-            const data = await response.json();
-            return data;
-        }
-    } catch (error) {
-        console.log(error);
-        return error;
+export const postData = async (URL, formData, opts = {}) => {
+  const token = localStorage.getItem("accessToken");
+  const baseHeaders = { "Content-Type": "application/json" };
+
+  const withAuthHeaders = token ? { ...baseHeaders, Authorization: `Bearer ${token}` } : baseHeaders;
+
+  try {
+    let response = await fetch(apiUrl + URL, {
+      method: "POST",
+      headers: withAuthHeaders,
+      body: JSON.stringify(formData),
+      signal: opts.signal,
+    });
+
+    // যদি auth লাগেনা কিন্তু ভুলক্রমে invalid token পাঠানো হয়, fallback করুন
+    if ((response.status === 401 || response.status === 403) && token) {
+      response = await fetch(apiUrl + URL, {
+        method: "POST",
+        headers: baseHeaders, // no Authorization
+        body: JSON.stringify(formData),
+        signal: opts.signal,
+      });
     }
-}
+
+    if (!response.ok) {
+      const err = await response.text();
+      throw new Error(err || `HTTP ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    if (error.name === "AbortError") return { aborted: true };
+    return { error: true, message: error?.message || "Request failed" };
+  }
+};
 
 export const fetchDataFromApi = async (url) => {
-    try {
-        const params = {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
-                'Content-Type': 'application/json'
-            },
-        }
-        const { data } = await axios.get(apiUrl + url, params)
-        return data;
-    } catch (error) {
-        return error;
+  try {
+    const token = localStorage.getItem("accessToken");
+    const headers = token
+      ? { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
+      : { "Content-Type": "application/json" };
 
-    }
-}
+    const { data } = await axios.get(apiUrl + url, { headers });
+    return data;
+  } catch (error) {
+    return error;
+  }
+};
 
 export const uploadImage = async (url, updateData) => {
-    const params = {
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
-            'Content-Type': 'multipart/form-data'
-        },
-    }
-    let response;
-    await axios.put(apiUrl + url, updateData, params).then((res) => {
-        console.log(res);
-        response = res;
+  const token = localStorage.getItem("accessToken");
+  const params = {
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      "Content-Type": "multipart/form-data",
+    },
+  };
+  let response;
+  await axios.put(apiUrl + url, updateData, params).then((res) => {
+    response = res;
+  });
+  return response;
+};
 
-    })
-    return response;
-}
-// Edit data
 export const editData = async (url, updateData) => {
-    const params = {
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
-            'Content-Type': 'application/json'
-        },
-    }
-    let response;
-    await axios.put(apiUrl + url, updateData, params).then((res) => {
-        console.log(res);
-        response = res;
+  const token = localStorage.getItem("accessToken");
+  const params = {
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      "Content-Type": "application/json",
+    },
+  };
+  let response;
+  await axios.put(apiUrl + url, updateData, params).then((res) => {
+    response = res;
+  });
+  return response;
+};
 
-    })
-    return response;
-}
+export const deleteData = async (url) => {
+  const token = localStorage.getItem("accessToken");
+  const params = {
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      "Content-Type": "application/json",
+    },
+  };
+  const { res } = await axios.delete(apiUrl + url, params);
+  return res;
+};

@@ -1,0 +1,27 @@
+/* Navigation arrows center align */
+.homeSliderV2 .swiper-button-next,
+.homeSliderV2 .swiper-button-prev {
+  color: #fff;
+  top: 70%;
+  transform: translateY(-60%);
+}
+
+/* Responsive arrow size */
+@media (max-width: 768px) {
+  .homeSliderV2 .swiper-button-next,
+  .homeSliderV2 .swiper-button-prev {
+    width: 28px;
+    height: 28px;
+  }
+  .homeSliderV2 .swiper-button-next:after,
+  .homeSliderV2 .swiper-button-prev:after {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 769px) {
+  .homeSliderV2 .swiper-button-next:after,
+  .homeSliderV2 .swiper-button-prev:after {
+    font-size: 24px;
+  }
+}

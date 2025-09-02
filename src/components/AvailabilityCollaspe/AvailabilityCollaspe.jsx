@@ -4,10 +4,17 @@ import Checkbox from '@mui/material/Checkbox';
 
 const AvailabilityCollaspe = () => {
     return (
-        <div className=''>
-           <FormControlLabel control={<Checkbox size='small' sx={{ py:0.6,px:1 }}/>} label="Available" className='w-full' />
-           <FormControlLabel control={<Checkbox size='small' sx={{ py:0.6,px:1}}/>} label="In Stock"  className='w-full' />
-           <FormControlLabel control={<Checkbox size='small' sx={{ py:0.6,px:1 }}/>} label="Not Available"  className='w-full' />
+        <div className='grid grid-cols-2 md:grid-cols-1 md-6'>
+           <FormControlLabel control={<Checkbox size='small' sx={{ py:0.6,px:1 }}/>} label="Available"  sx={{
+                    '& .MuiFormControlLabel-label': {
+                        fontSize: '14px', // যেকোনো px বা rem দিতে পারবেন
+                    },
+                }} />
+           <FormControlLabel control={<Checkbox size='small' sx={{ py:0.6,px:1 }}/>} label="Not Available"   sx={{
+                    '& .MuiFormControlLabel-label': {
+                        fontSize: '14px', // যেকোনো px বা rem দিতে পারবেন
+                    },
+                }} />
          
         </div>
     );

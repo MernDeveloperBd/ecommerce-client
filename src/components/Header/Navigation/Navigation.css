@@ -1,14 +1,15 @@
 .categoryPanel button{text-transform: capitalize !important;}
-.nav li .subMunu{visibility: hidden; z-index: 100;}
-.nav li .subMunu button{font-weight: 400 !important;}
 
-.nav li:hover .subMunu{opacity: 1 !important; visibility: inherit; top: 100%;}
+.nav li .subMenu{visibility: hidden; z-index: 1000;}
+.nav li .subMenu button{font-weight: 400 !important;}
+.nav li:hover .subMenu{opacity: 1 !important; visibility: inherit; top: 100%;}
+.nav li .subMenu li:hover button{color: red !important;}
+.nav li .subMenu li .subMenu{top:0px !important; left: 120% !important; opacity: 0 !important;}
+.nav li .subMenu li:hover .subMenu{ left: 100% !important; opacity: 1 !important;}
 
-.nav li .subMunu li:hover button{color: red !important;}
+.nav li .subMenu li .subMenu button{color: black !important;}
+.nav li .subMenu li .subMenu button:hover{color: red !important;}
 
 
-.nav li .subMunu li .subMunu{top:0px !important; left: 120% !important; opacity: 0 !important;}
-.nav li .subMunu li:hover .subMunu{ left: 100% !important; opacity: 1 !important;}
 
-.nav li .subMunu li .subMunu button{color: black !important;}
-.nav li .subMunu li .subMunu button:hover{color: red !important;}
+

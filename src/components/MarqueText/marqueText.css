@@ -1,0 +1,82 @@
+/* Marquee core */
+.marquee {
+  position: relative;
+  width: 20%;
+  overflow: hidden;
+  padding-block: 2px;
+}
+
+.marquee__inner {
+  display: flex;
+  width: max-content;
+  gap: var(--gap, 32px);
+  animation: marquee-move var(--duration, 20s) linear infinite;
+  will-change: transform;
+}
+
+/* দুই কপি আইটেম রাখি যাতে gap ছাড়া continuous মনে হয় */
+.marquee__group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap, 32px);
+}
+
+.marquee__item {
+  color: #4b5563; /* text-gray-600 */
+  white-space: nowrap;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.marquee__item b,
+.marquee__item .font-semibold,
+.marquee__item .font-medium {
+  color: #111827; /* text-gray-900 */
+}
+
+.marquee__sep {
+  opacity: 0.35;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
+/* hover pause (optional) */
+.marquee--hover-pause:hover {
+  animation-play-state: paused;
+}
+
+/* fade edges */
+.marquee__fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 32px;
+  pointer-events: none;
+}
+
+.marquee__fade--left {
+  left: 0;
+  background: linear-gradient(to right, white, rgba(255, 255, 255, 0));
+}
+
+.marquee__fade--right {
+  right: 0;
+  background: linear-gradient(to left, white, rgba(255, 255, 255, 0));
+}
+
+/* Keyframes: দুই গ্রুপ আছে বলে -50% পর্যন্ত শিফট করলেই লুপ হবে */
+@keyframes marquee-move {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Reduce motion: prefers-reduced-motion হলে অ্যানিমেশন বন্ধ */
+@media (prefers-reduced-motion: reduce) {
+  .marquee__inner {
+    animation: none !important;
+  }
+}

@@ -69,7 +69,7 @@ const ForgotPassword = () => {
         <section className="section ">
             <div className="container py-10">
                 <div className="card shadow-md w-[450px] m-auto rounded-md bg-white p-5 px-10">
-                    <img src="https://i.ibb.co/PZntnvzy/Haramain-khushbo.jpg" alt="" className='w-16 h-16 mx-auto rounded-md' />
+                    <img src="https://i.ibb.co.com/dw4bR2nX/Misam-Marifa-Fashion-World.png" alt="" className='w-16 h-16 mx-auto rounded-md' />
                     <h3 className="text-center text-[20px]">Forgot password</h3>
                     <form className='w-full mt-5' onSubmit={handleSubmit}>
                         <div className="form-group w-full mb-5 relative">

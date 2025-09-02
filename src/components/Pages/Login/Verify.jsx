@@ -29,14 +29,13 @@ const Verify = () => {
                     if (res?.error === false) {
                         openAlertBox("success", res?.message)
                         localStorage.removeItem("userEmail")
-                         setIsLoading(false)
+                        setIsLoading(false)
                         navigate('/login')
                     }
                     else {
                         openAlertBox("error", res?.message)
                         setIsLoading(false)
                     }
-
                 })
             }
             else {
@@ -52,7 +51,6 @@ const Verify = () => {
                         openAlertBox("error", res?.message)
                         setIsLoading(false)
                     }
-
                 })
             }
         }

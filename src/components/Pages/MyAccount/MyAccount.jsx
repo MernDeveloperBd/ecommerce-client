@@ -6,14 +6,15 @@ import { useContext, useEffect, useState } from "react";
 import { MyContext } from "../../../App";
 import { useNavigate } from "react-router-dom";
 import { editData, postData } from "../../../utils/api";
-import {Collapse} from 'react-collapse';
+import { Collapse } from 'react-collapse';
+import 'react-international-phone/style.css';
 
 
 const MyAccount = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isLoading2, setIsLoading2] = useState(false);
     const [userId, setUserId] = useState("");
-    const[isChangePasswordFormShow, setIsChangePasswordFromShow] = useState(false)
+    const [isChangePasswordFormShow, setIsChangePasswordFromShow] = useState(false)
 
     const [formFields, setFormFields] = useState({
         name: '',
@@ -21,7 +22,7 @@ const MyAccount = () => {
         mobile: ''
     });
     const [changePassword, setChangePassword] = useState({
-        email:'',
+        email: '',
         oldPassword: '',
         newPassword: '',
         confirmPassword: ''
@@ -34,7 +35,7 @@ const MyAccount = () => {
         if (token === null) {
             navigate('/')
         }
-    }, [isLogin, navigate]);
+    }, [navigate]);
     // 
     useEffect(() => {
         if (userData?._id !== "" && userData?._id !== undefined) {
@@ -67,6 +68,7 @@ const MyAccount = () => {
     };
 
     const validValue = Object.values(formFields).every(e1 => e1)
+
     const handleSubmit = (e) => {
         e.preventDefault();
         setIsLoading(true)
@@ -94,11 +96,6 @@ const MyAccount = () => {
                         email: '',
                         mobile: ''
                     })
-                    /* localStorage.setItem("accessToken", res?.data?.accessToken);
-                    localStorage.setItem("refreshToken", res?.data?.refreshToken);
-                    localStorage.removeItem("actionType") */
-                    /*  setIsLogin(true)
-                     setIsLoading(false) */
                 } else {
                     openAlertBox("error", res?.data?.message)
                     setIsLoading(false)
@@ -106,9 +103,7 @@ const MyAccount = () => {
 
             })
     }
-    // Change password
-    // const validValue2 = Object.values(changePassword).every(e1 => e1)
-    const handleSubmitChangePassword = async(e) => {
+    const handleSubmitChangePassword = async (e) => {
         e.preventDefault();
         setIsLoading2(true)
 
@@ -128,7 +123,7 @@ const MyAccount = () => {
             openAlertBox('error', "Password not matche")
             return false
         }
-          await postData(`/api/user/reset-password`, changePassword, { withCredentials: true })
+        await postData(`/api/user/reset-password`, changePassword, { withCredentials: true })
             .then((res) => {
                 if (res?.error !== true) {
                     setIsLoading2(false);
@@ -144,62 +139,60 @@ const MyAccount = () => {
 
     return (
         <section className="py-10 w-full">
-            <div className="container flex gap-5">
+            <div className="container flex flex-col md:flex-row gap-5">
                 {/* left sidebar */}
-                <div className="col1 w-[20%]">
+                <div className="col1 w-full md:w-[20%]">
                     <AccountSideBar />
                 </div>
                 {/*  right*/}
-                <div className="col2 w-[50%]">
+                <div className="col2 w-full md:w-[50%]">
                     <div className="card bg-white p-5 shadow-md rounded-md">
                         <div className="flex items-center pb-3">
                             <h2 className="text-lg font-semibold pb-0">My Profile</h2>
-                            <Button className="!ml-auto" onClick={()=>setIsChangePasswordFromShow(!isChangePasswordFormShow)}>Change Password</Button>
+                            <Button className="!ml-auto" onClick={() => setIsChangePasswordFromShow(!isChangePasswordFormShow)}>Change Password</Button>
                         </div>
                         <hr />
                         <form className="mt-5" onSubmit={handleSubmit}>
-                            <div className="flex items-center gap-5 mb-5">
-                                <div className="w-[50%]">
-                                    <TextField
-                                        id="name"
-                                        label="Full Name *"
-                                        name='name'
-                                        value={formFields.name}
-                                        disabled={isLoading === true ? true : false}
-                                        variant="outlined"
-                                        size="small"
-                                        className="w-full"
-                                        onChange={onChangeInput} />
-                                </div>
-                                <div className="w-[50%]">
-                                    <TextField
-                                        type='email'
-                                        id="email"
-                                        label="Email *"
-                                        name='email'
-                                        value={formFields.email}
-                                        disabled={true}
-                                        variant="outlined"
-                                        size="small"
-                                        className='w-full'
-                                        onChange={onChangeInput} />
-                                </div>
+                            <div className="flex flex-col md:flex-row items-center gap-5 mb-5">
+
+                                <TextField
+                                    id="name"
+                                    label="Full Name *"
+                                    name='name'
+                                    value={formFields.name}
+                                    disabled={isLoading === true ? true : false}
+                                    variant="outlined"
+                                    size="small"
+                                    className="w-full"
+                                    onChange={onChangeInput} />
+
+
+                                <TextField
+                                    type='email'
+                                    id="email"
+                                    label="Email"
+                                    name='email'
+                                    value={formFields.email}
+                                    disabled={true}
+                                    variant="outlined"
+                                    size="small"
+                                    className='w-full'
+                                    onChange={onChangeInput} />
+
                             </div>
-                            <div className="flex items-center gap-5 mb-5">
-                                <div className="w-[50%]">
+                            <div className="flex items-center mb-5">
+                                <div className="md:w-[50%] w-full">
                                     <TextField
                                         id="mobile"
-                                        label="Phone Number"
-                                        placeholder="Start with +880"
+                                        label="Mobile Number *"
                                         name='mobile'
-                                        value={formFields.mobile}
+                                        defaultValue={formFields.mobile}
                                         disabled={isLoading === true ? true : false}
                                         variant="outlined"
                                         size="small"
                                         className="w-full"
                                         onChange={onChangeInput} />
                                 </div>
-
                             </div>
                             <div className="flex items-center gap-4">
                                 <Button type="submit" disabled={!validValue} className={`${!validValue ? '!bg-gray-800 cursor-not-allowed' : '!bg-green-600 hover:!bg-green-700 !text-white !w-[140px]'} !text-white  flex gap-3`} >
@@ -211,66 +204,69 @@ const MyAccount = () => {
                         </form>
                     </div>
                     {/* Change password */}
-                    
-                       
-                        <Collapse isOpened={isChangePasswordFormShow}>
-                        <div className="card bg-white mt-4 p-5 shadow-md rounded-md">
-                        <div className="flex items-center pb-1">
-                            <Button className="pb-0">Change Password</Button>
-                        </div>
-                        <hr />
-                        <form className="mt-5" onSubmit={handleSubmitChangePassword}>
-                            <div className="flex items-center gap-5 mb-5">
-                                <div className="w-[50%]">
-                                    <TextField
-                                        id="oldPassword"
-                                        label="old password"
-                                        name='oldPassword'
-                                        size="small"
-                                        variant="outlined"
-                                        className="w-full"
-                                        disabled={isLoading2 === true ? true : false}
-                                        value={changePassword.oldPassword}
-                                        onChange={onChangeInput} />
-                                </div>
-                                <div className="w-[50%]">
-                                    <TextField
-                                        type='text'
-                                        id="newPassword"
-                                        label="New Password"
-                                        variant="outlined"
-                                        size="small"
-                                        className='w-full'
-                                         disabled={isLoading2 === true ? true : false}
-                                        name='newPassword'
-                                        value={changePassword.newPassword}
-                                        onChange={onChangeInput} />
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-5 mb-5">
-                                <div className="w-[50%]">
-                                    <TextField
-                                        id="confirmPassword"
-                                        label="Confirm Password"
-                                        variant="outlined"
-                                        size="small"
-                                        className="w-full"
-                                        name='confirmPassword'
-                                         disabled={isLoading2 === true ? true : false}
-                                        value={changePassword.confirmPassword}
-                                        onChange={onChangeInput} />
-                                </div>
 
+
+                    <Collapse isOpened={isChangePasswordFormShow}>
+                        <div className="card bg-white mt-4 p-5 shadow-md rounded-md">
+                            <div className="flex items-center pb-1">
+                                <Button className="pb-0">Change Password</Button>
                             </div>
-                            <div className="flex items-center gap-4">
-                                <Button type="submit" className={`cursor-not-allowed !bg-red-600 hover:!bg-red-700 !text-white '} !text-white  flex gap-3`} >
-                                    Change Password
-                                </Button>
-                            </div>
-                        </form>
-                    </div>
+                            <hr />
+                            <form className="mt-5" onSubmit={handleSubmitChangePassword}>
+                                <div className="grid grid-grid-cols-2 items-center gap-5 mb-5">
+                                    <div className="">
+                                        {
+                                            userData?.signUpWithGoolge === false && <TextField
+                                                id="oldPassword"
+                                                label="old password"
+                                                name='oldPassword'
+                                                size="small"
+                                                variant="outlined"
+                                                className="w-full"
+                                                disabled={isLoading2 === true ? true : false}
+                                                value={changePassword.oldPassword}
+                                                onChange={onChangeInput} />
+                                        }
+
+                                    </div>
+
+                                    <div className="">
+                                        <TextField
+                                            type='text'
+                                            id="newPassword"
+                                            label="New Password"
+                                            variant="outlined"
+                                            size="small"
+                                            className='w-full'
+                                            name='newPassword'
+                                            value={changePassword.newPassword}
+                                            onChange={onChangeInput} />
+                                    </div>
+
+                                </div>
+                                <div className=" mb-5">
+                                    <div className="">
+                                        <TextField
+                                            id="confirmPassword"
+                                            label="Confirm Password"
+                                            variant="outlined"
+                                            size="small"
+                                            className="w-full"
+                                            name='confirmPassword'
+                                            value={changePassword.confirmPassword}
+                                            onChange={onChangeInput} />
+                                    </div>
+
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <Button type="submit" className={`cursor-not-allowed !bg-red-600 hover:!bg-red-700 !text-white '} !text-white  flex gap-3`} >
+                                        Change Password
+                                    </Button>
+                                </div>
+                            </form>
+                        </div>
                     </Collapse>
-                    
+
                 </div>
             </div>
         </section>

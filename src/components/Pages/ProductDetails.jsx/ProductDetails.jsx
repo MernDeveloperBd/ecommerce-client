@@ -1,253 +1,268 @@
+
 import Breadcrumbs from '@mui/material/Breadcrumbs';
-import { Link } from 'react-router-dom';
-import ProductZoom from '../../ProductZoom/ProductZoom';
-import ProductDetailsContent from '../../ProductDetailsContent/ProductDetailsContent';
-import { useState } from 'react';
-import { Button, Rating } from '@mui/material';
-import TextField from '@mui/material/TextField';
-import ProductsSlider from '../../ProductsSlider/ProductsSlider';
+import { Link, useParams } from 'react-router-dom';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { fetchDataFromApi } from '../../../utils/api';
+import ProductZoomV22 from '../../ProductZoom/ProductZoomV22';
+import ProductDetailsContent2 from '../../ProductDetailsContent/ProductDetailsContent2';
+import RelatedProducts from '../../RelatedProducts/RelatedProducts';
+import Loading from '../../Loading/Loading';
+import { MyContext } from '../../../App';
+import Reviews from './Reviews';
+import Rating from '@mui/material/Rating'; // <-- যোগ করুন
 
 const ProductDetails = () => {
-   
-    const [activeTab, setActiveTab] = useState(0)
+    const { isLoading, setIsLoading } = useContext(MyContext);
+    const [activeTab, setActiveTab] = useState(0);
+    const [productData, setProductData] = useState();
+
+    // New: reviews state (lifted to this page)
+    const [reviewData, setReviewData] = useState([]);
+
+    const { id } = useParams();
+
+    useEffect(() => {
+        fetchDataFromApi(`/api/product/${id}`).then((res) => {
+            if (res?.error === false) {
+                setProductData(res?.product);
+                setTimeout(() => setIsLoading(false), 700);
+            }
+        });
+    }, [id, setIsLoading]);
+
+    // New: fetch reviews for this product (to show total & average here)
+    useEffect(() => {
+        if (!id) return;
+        fetchDataFromApi(`/api/user/getReviews?productId=${id}`).then((res) => {
+            if (res?.error === false && Array.isArray(res?.reviews)) {
+                setReviewData(res.reviews);
+            } else {
+                setReviewData([]);
+            }
+        });
+    }, [id]);
+
+    // New: compute total & average
+    const totalReviews = reviewData.length;
+    const avgRating = useMemo(() => {
+        if (!totalReviews) return 0;
+        const sum = reviewData.reduce((acc, r) => acc + Number(r?.rating || 0), 0);
+        return Number((sum / totalReviews).toFixed(1));
+    }, [reviewData, totalReviews]);
+
+    // Description split (আপনার আগের কোড)
+    const description = productData?.description;
+    const lines = useMemo(() => {
+        if (!description) return [];
+        const tokens = description.replace(/\r\n/g, "\n").split(/(।|\.|\n)/g);
+        const out = [];
+        let buf = "";
+        for (let i = 0; i < tokens.length; i++) {
+            const t = tokens[i];
+            if (t === "." || t === "।") {
+                buf += t;
+                const line = buf.trim();
+                if (line) out.push(line);
+                buf = "";
+            } else if (t === "\n") {
+                const line = buf.trim();
+                if (line) out.push(line);
+                buf = "";
+            } else {
+                buf += t;
+            }
+        }
+        if (buf.trim()) out.push(buf.trim());
+        return out;
+    }, [description]);
 
     function handleClick(event) {
         event.preventDefault();
-        console.info('You clicked a breadcrumb.');
     }
 
     return (
         <div className='py-5 pb-0'>
+            {/* Bredcums */}
             <div role="presentation" onClick={handleClick} className="container pb-2">
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link underline="hover" color="inherit" to="/" className="link">
-                        Home
-                    </Link>
-                    <Link
-                        underline="hover"
-                        color="inherit"
-                        to="/productListing"
-                        className="link"
-                    >
-                        Shop
-                    </Link>
-                    <Link
-                        underline="hover"
-                        color="inherit"
-                        href="/shop"
-                        className="link"
-                    >
-                        product details title
-                    </Link>
-
+                    <Link underline="hover" color="inherit" to="/" className="link">Home</Link>
+                    <Link underline="hover" color="inherit" to="/productListing" className="link">Shop</Link>
+                    <Link underline="hover" color="inherit" to="/shop" className="link">product details title</Link>
                 </Breadcrumbs>
             </div>
-            {/* product details */}
-            <section className='bg-white py-5'>
-                <div className='container flex gap-4'>
-                    <div className="productZoomContainer w-[30%] h-[450px] overflow-hidden">
-                        <ProductZoom />
-                    </div>
-                    <div className="rightDiv md:w-[70%] ">
-                        <ProductDetailsContent/>
-                    </div>
 
-                </div>
-                {/* Description and rivew */}
-                <div className='container'>
-                    <div className="flex items-center gap-4 mb-5">
-                        <span className={`link text-[17px] font-[600] ${activeTab === 0 && 'text-primary'}`} onClick={() => setActiveTab(0)}>Description</span>
-                        <span className={`link text-[17px] font-[600] ${activeTab === 1 && 'text-primary'}`} onClick={() => setActiveTab(1)}>Product Details</span>
-                        <span className={`link text-[17px] font-[600] ${activeTab === 2 && 'text-primary'}`} onClick={() => setActiveTab(2)}>Reviews (5)</span>
-                    </div>
-                    {
-                        activeTab === 0 && <div className="shadow-md w-full p-5 rounded-md">
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam, laborum aspernatur dolore sapiente, saepe quae non voluptatibus est commodi iusto unde sed explicabo possimus architecto doloremque voluptas. Reprehenderit, laborum deleniti!</p>
-                            <h4 className='text-lg font-semibold'>Light weigh desing</h4>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam, laborum aspernatur dolore sapiente, saepe quae non voluptatibus est commodi iusto unde sed explicabo possimus architecto doloremque voluptas. Reprehenderit, laborum deleniti!</p>
-                            <h4 className='text-lg font-semibold'>Free Shipping</h4>
-                            <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Consequuntur, qui!</p>
-                            <h4 className='text-lg font-semibold'>Money Back Gurantee</h4>
-                            <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Consequuntur, qui!</p>
-                            <h4 className='text-lg font-semibold'>Online Support</h4>
-                            <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Consequuntur, qui!</p>
-                        </div>
-                    }
-                    {
-                        activeTab === 1 &&
-
-                        <div className="shadow-md w-fullrounded-md p-5 rounded-md">
-                            <div className="relative overflow-x-auto">
-                                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                        <tr>
-                                            <th scope="col" className="px-6 py-3">
-                                                Product name
-                                            </th>
-                                            <th scope="col" className="px-6 py-3">
-                                                Color
-                                            </th>
-                                            <th scope="col" className="px-6 py-3">
-                                                Category
-                                            </th>
-                                            <th scope="col" className="px-6 py-3">
-                                                Price
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                                            <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                Apple MacBook Pro 17
-                                            </th>
-                                            <td className="px-6 py-4">
-                                                Silver
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                Laptop
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                Tk 2999
-                                            </td>
-                                        </tr>
-                                        <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                                            <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                Microsoft Surface Pro
-                                            </th>
-                                            <td className="px-6 py-4">
-                                                White
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                Laptop PC
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                TK 1999
-                                            </td>
-                                        </tr>
-                                        <tr className="bg-white dark:bg-gray-800">
-                                            <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                Magic Mouse 2
-                                            </th>
-                                            <td className="px-6 py-4">
-                                                Black
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                Accessories
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                TK 99
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+            {isLoading ? (
+                <Loading />
+            ) : (
+                <>
+                    <section className='bg-white py-5'>
+                        <div className='container flex flex-col md:flex-row gap-4'>
+                            <div className="productZoomContainer md:w-[40%] md:h-[460px] overflow-hidden">
+                                <ProductZoomV22 images={productData?.images} />
+                            </div>
+                            <div className="rightDiv md:w-[60%] ">
+                                <ProductDetailsContent2 item={productData} totalReviews={totalReviews} avgRating={avgRating} />
                             </div>
                         </div>
 
-                    }
+                        {/* Tabs + Average Summary */}
+                        <div className='container pt-8'>
+                            {/* Tabs row */}
+                            <div className="my-4 flex flex-col items-center gap-2">
+                                <div
+                                    role="tablist"
+                                    aria-label="Product tabs"
+                                    className="inline-flex items-center gap-1 rounded-full bg-white/90 p-1 ring-1 ring-gray-200 shadow-sm backdrop-blur"
+                                >
+                                    {/* Description */}
+                                    <button
+                                        type="button"
+                                        role="tab"
+                                        aria-selected={activeTab === 0}
+                                        onClick={() => setActiveTab(0)}
+                                        className={[
+                                            "group rounded-full px-3 md:px-4 py-1.5 md:py-2 text-[12px] md:text-[14px] font-semibold transition-all",
+                                            activeTab === 0
+                                                ? "bg-gradient-to-r from-sky-500 to-indigo-500 text-white shadow"
+                                                : "text-slate-700 hover:bg-sky-50",
+                                        ].join(" ")}
+                                    >
+                                        <span className="inline-flex items-center gap-2">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" className={activeTab === 0 ? "opacity-90" : "text-slate-500"}>
+                                                <path d="M4 5h16v2H4zM4 9h16v2H4zM4 13h10v2H4z" fill="currentColor" />
+                                            </svg>
+                                            Description
+                                        </span>
+                                    </button>
 
-                    {
-                        activeTab === 2 && (
-                            <div className='shadow-md w-[80%] rounded-md p-5'>
-                                <div className='w-full productReviewsContainer'>
-                                    <h2 className='font-semibold text-lg'>Customer questions & answers</h2>
-                                    {/* comment and answers */}
-                                    <div className="scroll w-full max-h-[300px] overflow-y-scroll-auto overflow-x-hidden mt-4">
-                                        {/* 1st review */}
-                                        <div className="review w-full p-3 flex items-center justify-between border-b border-[rgba(0,0,0,0.2)]">
-                                            <div className="info w-[60%] flex items-center gap-2">
-                                                <div className="img w-[60px] h-[60px] overflow-hidden rounded-full">
-                                                    <img src="https://www.shutterstock.com/image-vector/businessman-profile-picture-user-sign-260nw-302150789.jpg" alt="" className='w-full ' />
-                                                </div>
-                                                <div className='w-[80%]'>
-                                                    <h4 className='text-[16px] font-[500]'>Abdul Aziz</h4>
-                                                    <h5 className='text-[13px] mb-0'>2025-06-14</h5>
-                                                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Doloremque, totam.</p>
-                                                </div>
+                                    {/* Reviews with count */}
+                                    <button
+                                        type="button"
+                                        role="tab"
+                                        aria-selected={activeTab === 2}
+                                        onClick={() => setActiveTab(2)}
+                                        className={[
+                                            "group rounded-full px-3 md:px-4 py-1.5 md:py-2 text-[12px] md:text-[14px] font-semibold transition-all",
+                                            activeTab === 2
+                                                ? "bg-gradient-to-r from-sky-500 to-indigo-500 text-white shadow"
+                                                : "text-slate-700 hover:bg-sky-50",
+                                        ].join(" ")}
+                                    >
+                                        <span className="inline-flex items-center gap-2">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" className={activeTab === 2 ? "opacity-90" : "text-slate-500"}>
+                                                <path d="M21 6H3v12h5v4l6-4h7z" fill="currentColor" />
+                                            </svg>
+                                            Reviews
+                                            <span
+                                                className={[
+                                                    "ml-1 inline-flex h-5 min-w-[22px] items-center justify-center rounded-full px-1.5 text-[11px] font-bold transition",
+                                                    activeTab === 2
+                                                        ? "bg-white/25 text-white ring-1 ring-white/40"
+                                                        : "bg-gray-100 text-slate-700 ring-1 ring-gray-200",
+                                                ].join(" ")}
+                                            >
+                                                {totalReviews}
+                                            </span>
+                                        </span>
+                                    </button>
+                                </div>
 
-                                            </div>
-                                            <Rating name='size-small' defaultValue={4} size='small' readOnly>
-
-                                            </Rating>
-                                        </div>
-                                        {/* 1st review */}
-                                        <div className="review w-full p-3 flex items-center justify-between border-b border-[rgba(0,0,0,0.2)]">
-                                            <div className="info w-[60%] flex items-center gap-2">
-                                                <div className="img w-[60px] h-[60px] overflow-hidden rounded-full">
-                                                    <img src="https://www.shutterstock.com/image-vector/businessman-profile-picture-user-sign-260nw-302150789.jpg" alt="" className='w-full ' />
-                                                </div>
-                                                <div className='w-[80%]'>
-                                                    <h4 className='text-[16px] font-[500]'>Abdul Aziz</h4>
-                                                    <h5 className='text-[13px] mb-0'>2025-06-14</h5>
-                                                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Doloremque, totam.</p>
-                                                </div>
-
-                                            </div>
-                                            <Rating name='size-small' defaultValue={4} size='small' readOnly>
-
-                                            </Rating>
-                                        </div>
-                                        {/* 1st review */}
-                                        <div className="review w-full p-3 flex items-center justify-between border-b border-[rgba(0,0,0,0.2)]">
-                                            <div className="info w-[60%] flex items-center gap-2">
-                                                <div className="img w-[60px] h-[60px] overflow-hidden rounded-full">
-                                                    <img src="https://www.shutterstock.com/image-vector/businessman-profile-picture-user-sign-260nw-302150789.jpg" alt="" className='w-full ' />
-                                                </div>
-                                                <div className='w-[80%]'>
-                                                    <h4 className='text-[16px] font-[500]'>Abdul Aziz</h4>
-                                                    <h5 className='text-[13px] mb-0'>2025-06-14</h5>
-                                                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Doloremque, totam.</p>
-                                                </div>
-
-                                            </div>
-                                            <Rating name='size-small' defaultValue={4} size='small' readOnly>
-
-                                            </Rating>
-                                        </div>
-                                        {/* 1st review */}
-                                        <div className="review w-full p-3 flex items-center justify-between border-b border-[rgba(0,0,0,0.2)]">
-                                            <div className="info w-[60%] flex items-center gap-2">
-                                                <div className="img w-[60px] h-[60px] overflow-hidden rounded-full">
-                                                    <img src="https://www.shutterstock.com/image-vector/businessman-profile-picture-user-sign-260nw-302150789.jpg" alt="" className='w-full ' />
-                                                </div>
-                                                <div className='w-[80%]'>
-                                                    <h4 className='text-[16px] font-[500]'>Abdul Aziz</h4>
-                                                    <h5 className='text-[13px] mb-0'>2025-06-14</h5>
-                                                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Doloremque, totam.</p>
-                                                </div>
-
-                                            </div>
-                                            <Rating name='size-small' defaultValue={4} size='small' readOnly />
-                                        </div>
-
-                                    </div>
-                                    {/* add comment */}
-                                    <div className='reviewForm bg-[#fafafa] p-4 rounded-md'>
-                                        <h2 className='text-[18px] mb-4'>Add a review</h2>
-                                        <form className='w-full'>
-                                            <TextField id='outlined-multiline-flexible' label='Add Your review' multiline rows={5} className='w-full' />
-                                            <Rating name='size-small' defaultValue={4} size='small' readOnly className='mt-4' />
-                                            <div className='flex items-center mt-4'>
-                                                <Button className='!bg-orange-600 !text-white hover:!bg-orange-700 !font-[600]'>Submit Review</Button>
-                                            </div>
-
-
-                                        </form>
-                                    </div>
+                                {/* Average summary (md+ shows beside tabs, mobile shows below) */}
+                                <div className="flex items-center gap-2 text-[12px] text-slate-700">
+                                    <span className="font-semibold">Average</span>
+                                    <Rating value={avgRating} precision={0.1} readOnly size="small" />
+                                    <span>({totalReviews})</span>
                                 </div>
                             </div>
-                        )
-                    }
 
-                </div>
-                
-            </section>
-            {/* Related Products */}
-                <div className="  p-5">
-                    <h2 className="container font-semibold text-[20px]">Related Products</h2>
-                         <ProductsSlider items={6}/>
-                </div>
+                            {/* Description */}
+                            {activeTab === 0 && (
+                                <div className="relative rounded-2xl p-[1.2px] bg-gradient-to-br from-sky-100 via-indigo-100 to-violet-100">
+                                    <div className="relative overflow-hidden rounded-2xl bg-white/90 backdrop-blur p-3 md:p-5 ring-1 ring-gray-200 shadow-sm">
+                                        {/* subtle pattern */}
+                                        <div
+                                            className="pointer-events-none absolute inset-0 opacity-60"
+                                            style={{
+                                                backgroundImage: 'radial-gradient(rgba(2,6,23,0.035) 1px, transparent 1px)',
+                                                backgroundSize: '14px 14px',
+                                            }}
+                                        />
+
+                                        {/* Header */}
+                                        <div className="relative mb-4 flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-sky-50 text-sky-700 ring-1 ring-sky-200">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24">
+                                                        <path d="M4 5h16v2H4zM4 9h16v2H4zM4 13h10v2H4z" fill="currentColor" />
+                                                    </svg>
+                                                </span>
+                                                <h4 className="text-[15px] md:text-[16px] font-semibold text-slate-800">Description</h4>
+                                            </div>
+
+                                            {Array.isArray(lines) && lines.length > 0 && (
+                                                <span className="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 ring-1 ring-gray-200 shadow-sm">
+                                                    {lines.length} points
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {/* Beautiful timeline list */}
+                                        {lines.length > 0 ? (
+                                            <ul className="relative space-y-3 md:space-y-3">
+                                                {lines.map((line, i) => (
+                                                    <li
+                                                        key={i}
+                                                        className="group relative pl-10 pr-3 py-3 rounded-xl border border-gray-100 bg-white/70 hover:bg-white transition-colors shadow-sm hover:shadow-md"
+                                                    >
+                                                        {/* Bullet */}
+                                                        <span className="absolute left-3 top-4 h-4 w-4 rounded-full bg-white ring-2 ring-sky-300 shadow-sm">
+                                                            <span className="absolute inset-0 m-auto h-2 w-2 rounded-full bg-gradient-to-r from-sky-400 to-indigo-400" />
+                                                            {/* soft pulse on hover */}
+                                                            <span className="absolute inset-0 m-auto h-4 w-4 rounded-full bg-sky-200/30 blur-[2px] opacity-0 transition-opacity group-hover:opacity-100" />
+                                                        </span>
+
+                                                        {/* Connector (except last) */}
+                                                        {i !== lines.length - 1 && (
+                                                            <span className="absolute left-[23px] top-8 bottom-[-10px] w-px bg-gradient-to-b from-sky-200 to-indigo-200" />
+                                                        )}
+
+                                                        {/* Content */}
+                                                        <p className="text-slate-700 text-sm md:text-[15px] leading-relaxed">
+                                                            {line}
+                                                        </p>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <p className="text-slate-500 text-sm">No description available.</p>
+                                        )}
+
+                                        {/* Accent underline */}
+                                        <div className="mt-4 h-[2px] w-24 rounded-full bg-gradient-to-r from-sky-300 via-indigo-300 to-violet-300" />
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Reviews */}
+                            {activeTab === 2 && (
+                                <div className="relative mx-auto shadow-none md:w-[80%] rounded-3xl p-[1.2px] bg-gradient-to-tr from-sky-100 via-indigo-100 to-violet-100">
+                                    {/* আপনি চাইলে Reviews কম্পোনেন্টকে props দিয়ে একই ডেটা ব্যবহার করাতে পারেন */}
+                                    <Reviews productId={productData?._id} />
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Related Products */}
+                        <div className="p-2 md:p-5 py-4">
+                            <RelatedProducts />
+                        </div>
+                    </section>
+                </>
+            )}
         </div>
     );
 };
 
 export default ProductDetails;
+
+
