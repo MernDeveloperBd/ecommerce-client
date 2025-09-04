@@ -2,7 +2,7 @@ import { FaShippingFast } from "react-icons/fa";
 
 const ShippingBanner = () => {
   return (
-    <section className="bg-white py-6 md:py-12">
+    <section className="bg-white py-1">
       <div className="container mx-auto px-4">
         {/* Gradient Border Card */}
         <div className="freeshipping relative overflow-hidden rounded-2xl bg-gradient-to-r from-violet-500 via-fuchsia-500 to-pink-500 p-[2px]">

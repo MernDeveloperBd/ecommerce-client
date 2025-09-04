@@ -49,7 +49,7 @@ const LatestProducts = () => {
   };
 
   return (
-    <section className="bg-white py-8">
+    <section className="bg-white ">
       <div className="container mx-auto px-1">
         {/* Header */}
        <div className="flex flex-col md:flex-row items-start md:items-center md:justify-between mb-6 gap-4 rounded-2xl border border-gray-200/70 bg-gradient-to-b from-white to-gray-50 p-4 md:p-5 shadow-sm">

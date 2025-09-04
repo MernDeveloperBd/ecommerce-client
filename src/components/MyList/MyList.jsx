@@ -1,10 +1,15 @@
 
 import MyListItem from "./MyListItems";
 import AccountSideBar from "../AccountSidebar/AccountSideBar";
+import { useContext } from "react";
+import { MyContext } from "../../App";
 
 
 
 const MyList = () => {
+    const{getmyListData} = useContext(MyContext)
+  
+    
 
     return (
          <section className="py-10 w-full">

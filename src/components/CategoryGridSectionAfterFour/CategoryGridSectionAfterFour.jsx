@@ -35,7 +35,7 @@ const CategoryGridSectionAfterFour = () => {
   };
 
   return (
-   <section className="relative py-10 md:py-12 bg-gradient-to-b from-gray-50 via-white to-gray-50">
+   <section className="relative py-4 bg-gradient-to-b from-gray-50 via-white to-gray-50">
   <div className="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
     {categories.slice(4).map((cat, index) => {
       const catProducts = getCategoryProducts(cat._id);

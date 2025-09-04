@@ -90,12 +90,13 @@ const MyAccount = () => {
                 if (res?.error !== true) {
                     setIsLoading(false);
                     openAlertBox("success", res?.data?.message)
-                    navigate('/')
+                   
                     setFormFields({
                         name: '',
                         email: '',
                         mobile: ''
                     })
+                     navigate('/')
                 } else {
                     openAlertBox("error", res?.data?.message)
                     setIsLoading(false)

@@ -5,7 +5,7 @@ const OneBanner = () => {
     "https://i.ibb.co/S7MP82GQ/banner-width.png"; // চাইলে props দিয়ে ডাইনামিক করতে পারেন
 
   return (
-    <section className="bg-white py-8">
+    <section className="bg-white py-4 container">
       <div className="container relative">
         {/* soft glow behind */}
         <div

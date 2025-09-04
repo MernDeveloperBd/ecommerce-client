@@ -36,7 +36,7 @@ const CategorySlider = () => {
   };
 
   return (
-    <div className="relative mx-auto max-w-screen-xl px-2 md:px-4 py-6 md:py-10">
+    <div className="relative mx-auto max-w-screen-xl px-2 md:px-4 py-2">
       {/* Outer gradient frame */}
       <div className="relative rounded-3xl p-[1px] bg-gradient-to-br from-rose-300/60 via-fuchsia-300/50 to-orange-300/60 shadow-[0_10px_30px_rgba(0,0,0,.06)]">
         {/* Glass container */}

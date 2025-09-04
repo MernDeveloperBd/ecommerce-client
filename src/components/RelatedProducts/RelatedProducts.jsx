@@ -37,32 +37,83 @@ const RelatedProducts = ({
   };
 
   // Normalize product to the fields ProductItem expects
-  const normalizeProduct = (p) => {
-    const _id = idStr(p?._id);
-    const name = p?.name || p?.title || "Untitled";
-    const images =
-      Array.isArray(p?.images) && p.images.length
-        ? p.images
-        : Array.isArray(p?.gallery)
-        ? p.gallery
-        : [];
-    const price =
-      typeof p?.price !== "undefined"
-        ? p?.price
-        : typeof p?.salePrice !== "undefined"
-        ? p?.salePrice
-        : null;
-    const oldPrice = typeof p?.oldPrice !== "undefined" ? p?.oldPrice : p?.mrp;
-    const resellingPrice = p?.resellingPrice ?? null;
-    const catName =
-      p?.catName ||
-      p?.category?.name ||
-      (typeof p?.category === "string" ? p.category : "") ||
-      "Others";
-
-    return { _id, name, images, price, oldPrice, resellingPrice, catName };
+// Normalize product to the fields ProductItem expects
+const normalizeProduct = (p) => {
+  const idStr = (id) => {
+    if (!id) return "";
+    if (typeof id === "string") return id;
+    if (typeof id === "object") return String(id.$oid || id._id || "");
+    return String(id);
   };
 
+  const _id = idStr(p?._id);
+  const name = p?.name || p?.title || "Untitled";
+
+  // Make sure images is an array
+  const images =
+    (Array.isArray(p?.images) && p.images.length && p.images) ||
+    (Array.isArray(p?.gallery) && p.gallery.length && p.gallery) ||
+    (p?.image ? [p.image] : []);
+
+  const price =
+    typeof p?.price !== "undefined"
+      ? p.price
+      : typeof p?.salePrice !== "undefined"
+      ? p.salePrice
+      : null;
+
+  const oldPrice = typeof p?.oldPrice !== "undefined" ? p.oldPrice : p?.mrp ?? null;
+
+  const resellingPrice = p?.resellingPrice ?? null;
+
+  const catName =
+    p?.catName ||
+    p?.category?.name ||
+    (typeof p?.category === "string" ? p.category : "") ||
+    "Others";
+
+  // Keep all original fields and just ensure the essentials are present/normalized
+  return {
+    ...p,                 // keep variants, stock, brand, rating, etc.
+    _id,                  // force string id
+    productId: _id,       // convenience for cart code that uses productId
+    name,
+    images,
+    price,
+    oldPrice,
+    resellingPrice,
+    catName,
+
+    // Ensure variants exist in the expected shape
+    productSize: Array.isArray(p?.productSize)
+      ? p.productSize
+      : Array.isArray(p?.sizes)
+      ? p.sizes
+      : p?.size
+      ? [p.size]
+      : [],
+
+    color: Array.isArray(p?.color)
+      ? p.color
+      : Array.isArray(p?.productColor)
+      ? p.productColor
+      : Array.isArray(p?.colors)
+      ? p.colors
+      : [],
+
+    // Ensure stock field exists
+    countInStock:
+      typeof p?.countInStock === "number"
+        ? p.countInStock
+        : typeof p?.stock === "number"
+        ? p.stock
+        : 0,
+
+    // Optional fallbacks
+    rating: typeof p?.rating === "number" ? p.rating : 0,
+    brand: p?.brand || "",
+  };
+};
   const refetch = useCallback(async () => {
     setLoading(true);
     setErr("");

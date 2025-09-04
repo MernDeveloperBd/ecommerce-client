@@ -105,7 +105,7 @@ const Navigation = () => {
 
   return (
     <>
-      <nav className="relative py-1">
+      <nav className="relative py-0">
         <div className="container flex items-center justify-between gap-6 overflow-visible">
           {/* Left - Category Button */}
           <div className="col_1 w-[70%] md:w-[22%]">
@@ -143,7 +143,7 @@ const Navigation = () => {
 
           {/* Middle - Navigation */}
           <div className="col_2 w-[70%] z-[1000] hidden md:block">
-            <div className="rounded-full bg-white/60 backdrop-blur-md ring-1 ring-black/5 shadow-sm px-1 py-1 overflow-visible">
+            <div className="rounded-full bg-white/60 backdrop-blur-md ring-1 ring-black/5 shadow-sm px-1 py-0 overflow-visible">
               <ul className="flex items-center gap-1 list-none m-0 p-0">
                 {/* Home */}
                 <li className="relative group">
@@ -224,7 +224,7 @@ const Navigation = () => {
           {/* Right - Free Delivery */}
           <div className="col_3 md:w-[10%] hidden md:flex justify-end">
             <div
-              className="group relative inline-flex items-center gap-2 rounded-full px-3 py-1.5 
+              className="group relative inline-flex items-center gap-2 rounded-full px-3 py-1.5
                bg-white/70 backdrop-blur-md ring-1 ring-black/5 shadow-sm
                hover:ring-violet-200 hover:shadow-lg transition"
             >

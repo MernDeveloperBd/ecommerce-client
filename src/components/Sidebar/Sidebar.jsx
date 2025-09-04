@@ -12,12 +12,7 @@ import { MyContext } from "../../App";
 import { FaRegSquareMinus, FaRegSquarePlus } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
-const Sidebar = ({
-  filters,
-  onUpdateFilters,
-  price,
-  setPrice,
-  counts = { cat: {}, sub: {}, third: {} },
+const Sidebar = ({filters, onUpdateFilters, price, setPrice, counts = { cat: {}, sub: {}, third: {} },
 }) => {
 
   const [isOpenSizeFIleter, setIsOpenSizeFIlter] = useState(true);

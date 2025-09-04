@@ -15,12 +15,13 @@ import MenuItem from '@mui/material/MenuItem';
 import { BsFillBagCheckFill } from "react-icons/bs";
 import { IoIosLogOut, IoMdHeart } from "react-icons/io";
 import { fetchDataFromApi } from "../../utils/api";
-import { FiHelpCircle, FiTruck, FiUser } from "react-icons/fi";
+import { FiHelpCircle, FiTruck, FiUploadCloud, FiUser } from "react-icons/fi";
 
 
 const Header = () => {
-    const { setOpenCartModal, isLogin, setIsLogin, userData } = useContext(MyContext)
+    const { setOpenCartModal, isLogin, setIsLogin, userData, cartData, setUserData, setCartData} = useContext(MyContext)
     const [anchorEl, setAnchorEl] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
     const open = Boolean(anchorEl);
     const navigate = useNavigate()
     const handleClick = (event) => {
@@ -37,6 +38,8 @@ const Header = () => {
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("refreshToken");
                 localStorage.removeItem("actionType")
+                setUserData(null)
+                setCartData([])
                 navigate('/')
             }
 
@@ -44,7 +47,7 @@ const Header = () => {
     }
 
     return (
-        <header className="bg-white sticky -top-[110px] md:-top-[115px] z-50 shadow-md py-1">
+        <header className="bg-white sticky -top-[90px] md:-top-[60px] z-50 shadow-md py-1">
             <div className="top-strip py-1 ">
                 <div className=" ">
                     <div className="relative bg-gradient-to-r from-gray-50 via-white to-gray-50 text-gray-700 text-xs md:text-sm border-b border-gray-200/70">
@@ -75,7 +78,7 @@ const Header = () => {
                                                 <span className="text-gray-600">
                                                     Free delivery on orders over <span className="font-semibold text-gray-900">TK 3000</span>
                                                 </span>
-                                                 <span className="text-gray-600">
+                                                <span className="text-gray-600">
                                                     এক প্ল্যাটফর্মে কিনুন  <span className="font-semibold text-gray-900">ও বিক্রি করুন</span>
                                                 </span>
 
@@ -90,7 +93,7 @@ const Header = () => {
                                                 <span className="text-gray-600">
                                                     Free delivery on orders over <span className="font-semibold text-gray-900">TK 3000</span>
                                                 </span>
-                                               
+
                                             </div>
                                         </div>
                                     </div>
@@ -99,7 +102,7 @@ const Header = () => {
                                 {/* Right - Links (md+: half width, right aligned) */}
                                 <div className="w-full md:w-1/2">
                                     <ul className="flex items-center justify-center md:justify-end gap-2 sm:gap-4 text-center md:text-left">
-                                        <li>
+                                        <li className="hidden md:block " >
                                             <Link
                                                 to="/help-center"
                                                 className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors hover:text-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
@@ -109,9 +112,8 @@ const Header = () => {
                                             </Link>
                                         </li>
 
-                                        <li className="hidden sm:block h-4 w-px bg-gray-300/70" aria-hidden="true" />
-
-                                        <li>
+                                        <li className="hidden md:block h-4 w-px bg-gray-300/70" aria-hidden="true" />
+                                        <li className="hidden md:block " >
                                             <Link
                                                 to="/order-tracking"
                                                 className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors hover:text-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
@@ -132,9 +134,65 @@ const Header = () => {
                                                 My Account
                                             </Link>
                                         </li>
+
+                                        {/* Divider before CTA */}
+                                        <li className="hidden sm:block h-4 w-px bg-gray-300/70" aria-hidden="true" />
+
+                                        {/* New CTA: Post product / Sell */}
+                                        <>
+                                            {/* Button */}
+                                            <li title="upcoming">
+                                                <button
+                                                    onClick={() => setIsOpen(true)}
+                                                    className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded-full
+          bg-gradient-to-r from-violet-500 to-rose-400 text-white
+          font-semibold shadow-sm transition hover:opacity-95
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/40"
+                                                    aria-label="Post your product"
+                                                >
+                                                    <FiUploadCloud className="text-sm" />
+                                                    Become a Seller
+                                                </button>
+                                            </li>
+
+                                            {/* Modal */}
+                                            {isOpen && (
+                                                <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-[90]">
+                                                    <div className="bg-gradient-to-r from-violet-100 to-rose-100 p-8 rounded-3xl shadow-2xl max-w-md w-full text-center relative animate-fadeIn">
+                                                        {/* Icon / Emoji */}
+                                                        <div className="w-16 h-16 flex items-center justify-center mx-auto rounded-full bg-gradient-to-r from-violet-600 to-rose-500 text-white text-3xl shadow-md mb-4">
+                                                            🚀
+                                                        </div>
+
+                                                        {/* Title */}
+                                                        <h2 className="text-2xl font-extrabold text-gray-900 mb-3">
+                                                            ✨ Coming Soon ✨
+                                                        </h2>
+
+                                                        {/* Message */}
+                                                        <p className="text-gray-700 leading-relaxed font-medium">
+                                                            আমরা আপনার জন্য <span className="text-violet-600 font-semibold">Reselling করার দারুণ সুযোগ</span>
+                                                            নিয়ে আসছি 💡
+                                                            <br />
+                                                            অনুগ্রহ করে একটু অপেক্ষা করুন 🙂
+                                                        </p>
+
+                                                        {/* Button */}
+                                                        <button
+                                                            onClick={() => setIsOpen(false)}
+                                                            className="mt-6 px-6 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-rose-500 
+                 text-white font-semibold shadow-md hover:scale-105 hover:shadow-lg 
+                 transition-all duration-300 ease-in-out"
+                                                        >
+                                                            Got it!
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                            )}
+                                        </>
                                     </ul>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -143,17 +201,17 @@ const Header = () => {
             </div>
             {/* menu */}
             <div className="header py-1 border border-b-[1px]">
-                <div className="container flex flex-col md:flex-row items-center md:justify-between gap-2">
-                    <div className="col1 md:w-[30%]">
-                        <Link to={'/'} className="flex items-center gap-2">
+                <div className="container flex flex-col md:flex-row md:items-start md:justify-between gap-2">
+                    <div className="col1 w-full md:w-[30%] ">
+                        <Link to={'/'} className="flex items-center justify-center md:justify-start gap-2">
                             <img src="https://res.cloudinary.com/dqokqca8p/image/upload/v1756018288/My%20Brand/Misam_Marifa_Fashion_World_jkz3o8.png" alt="logo" className="w-8 md:w-8 h-8 md:h-8 rounded-full" />
                             <h2 className="!text-sm md:!text-xl !font-semibold">MM Fashion <span className="text-primary">World</span></h2>
                         </Link>
                     </div>
-                    <div className="col2 w-full md:w-[35%]">
+                    <div className="col2 w-full md:w-[30%] hidden md:block">
                         <Search />
                     </div>
-                    <div className="col2 md:w-[35%] flex items-center pl-0 md:pl-5">
+                    <div className="col2 md:w-[40%] flex items-center pl-0 md:pl-5">
                         <ul className="flex items-center justify-end gap-2 w-full">
                             {
                                 isLogin === false ? <li className="list-none">
@@ -259,7 +317,7 @@ const Header = () => {
                                     <Tooltip title="Cart">
                                         <IconButton onClick={() => setOpenCartModal(true)}>
                                             <Stack spacing={1} direction="row" sx={{ color: 'action.active' }}>
-                                                <Badge color="secondary" badgeContent={3} showZero>
+                                                <Badge color="secondary" badgeContent={cartData?.length} showZero>
                                                     <MdOutlineShoppingCart className="text-xl" />
                                                 </Badge>
                                             </Stack>
@@ -269,7 +327,6 @@ const Header = () => {
                             </div>
                         </ul>
                     </div>
-
                 </div>
             </div>
             {/* Navigation */}

@@ -25,7 +25,7 @@ import Checkout from './components/Checkout/Checkout'
 import MyAccount from './components/Pages/MyAccount/MyAccount'
 import MyList from './components/MyList/MyLIst'
 import Orders from './components/Pages/Orders/Orders'
-import { fetchDataFromApi } from './utils/api'
+import { fetchDataFromApi, postData } from './utils/api'
 import Address from './components/Pages/MyAccount/Address'
 import ProductZoomV2 from './components/ProductZoom/ProductZoomV2'
 import ScrollToTop from './components/ScrolTop/ScrollToTop'
@@ -38,7 +38,8 @@ const googleProvider = new GoogleAuthProvider();
 
 
 
-export const MyContext = createContext()
+export const MyContext = createContext();
+
 function App() {
   const [openProductDetailsModal, setOpenProductDetailsModal] = useState({
     open: false,
@@ -51,7 +52,10 @@ function App() {
   const [address, setAddress] = useState([])
   const [catData, setCatData] = useState([]);
   const [productsData, setProductsData] = useState([]);
-  const[isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
+  const [cartData, setCartData] = useState([])
+  const [myListData, setMyListData] = useState([])
+  const [isAddedMyList, setIsAddedMyList] = useState(false);
 
   // Cart
   const [openCartModal, setOpenCartModal] = useState(false);
@@ -77,32 +81,61 @@ function App() {
     setOpenProductDetailsModal(false);
   };
 
-  // google sign in
-const googleLogIn = () =>{
-  return signInWithPopup(auth, googleProvider)
-}
 
+  // google sign in
+  const googleLogIn = () => {
+    return signInWithPopup(auth, googleProvider)
+  }
+
+  // 1) on mount -> isLogin derive from token
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    if (token !== undefined && token !== null && token !== "") {
-      setIsLogin(true)
+    setIsLogin(Boolean(token));
+  }, []);
 
-      fetchDataFromApi(`/api/user/user-details`).then((res) => {
-        setUserData(res?.data)
-        if (res?.response?.data?.error === true) {
-          if (res?.response?.data?.message == 'You have got login') {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
-            openAlertBox("error", "Your session is closed. please login again")
-            window.location.href = '/login'
-            setIsLogin(false)
-          }
+  // 2) when logged in -> fetch user + cart
+  useEffect(() => {
+    if (!isLogin) return;
+
+    fetchDataFromApi(`/api/user/user-details`).then((res) => {
+      if (res?.error === false) {
+        setUserData(res?.data);
+      } else if (res?.response?.data?.error === true) {
+        if (res?.response?.data?.message === "You have got login") {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+          openAlertBox("error", "Your session is closed. please login again");
+          setIsLogin(false);
+          window.location.href = "/login";
         }
-      })
-    } else {
-      setIsLogin(false)
-    }
-  }, [setIsLogin])
+      }
+    });
+
+    getCartItems();
+  }, [isLogin]);
+
+  /*  useEffect(() => {
+     const token = localStorage.getItem("accessToken");
+     if (token !== undefined && token !== null && token !== "") {
+       setIsLogin(true)
+ 
+       fetchDataFromApi(`/api/user/user-details`).then((res) => {
+         setUserData(res?.data)
+         if (res?.response?.data?.error === true) {
+           if (res?.response?.data?.message == 'You have got login') {
+             localStorage.removeItem("accessToken");
+             localStorage.removeItem("refreshToken");
+             openAlertBox("error", "Your session is closed. please login again")
+             window.location.href = '/login'
+             setIsLogin(false)
+           }
+         }
+       })
+       getCartItems()
+     } else {
+       setIsLogin(false)
+     }
+   }, [setIsLogin]) */
 
   useEffect(() => {
     fetchDataFromApi(`/api/category`).then((res) => {
@@ -126,14 +159,97 @@ const googleLogIn = () =>{
     if (status === "error") {
       toast.error(msg)
     }
+  };
+
+  // Add To Cart
+  const addToCart = (product, userId, quantity) => {
+    if (userId === undefined) {
+      openAlertBox("error", "You are not logged in. please login first")
+      return false;
+    }
+    const data = {
+      productTitle: product?.name,
+      image: product?.image,
+      rating: product?.rating,
+      price: product?.price,
+      quantity: quantity,
+      subTotal: parseInt(product?.price * quantity),
+      productId: product?._id,
+      countInStock: product?.countInStock,
+      userId: userId,
+      brand: product?.brand,
+      productSize: product?.productSize,
+      productColor: product?.productColor,
+      oldPrice: product?.oldPrice
+    };
+    console.log(data);
+
+    postData('/api/cart/add', data).then((res) => {
+      if (res?.error === false) {
+        openAlertBox("success", res?.message)
+        getCartItems()
+      } else {
+        openAlertBox('error', res?.message)
+      }
+
+    })
+  };
+
+  const getCartItems = () => {
+    fetchDataFromApi('/api/cart/getItems').then((res) => {
+      if (res?.error === false) {
+        setCartData(res?.data)
+      }
+    })
+  };
+
+  // Handle add to my list
+  const handleAddToMyList = (product) => {   
+    if (userData === null) {
+      openAlertBox("error", "You are not logged in. please login first")
+      return false;
+    } else {
+      const obj = {
+        productId: product?._id,
+        userId: userData?._id,
+        productTitle: product?.name,
+        image: product?.images[0],
+        rating: product?.rating,
+        price: product?.price,
+        oldPrice: product?.oldPrice,
+        resellingPrice: product?.resellingPrice,
+        brand: product?.brand,
+        catName: product?.catName,
+
+      }
+      postData('/api/myList/add', obj).then((res) => {
+        if (res?.error === false) {
+          openAlertBox("success", res?.message)
+          getmyListData()
+          setIsAddedMyList(true)
+        } else {
+          openAlertBox('error', res?.message)
+        }
+
+      })
+    }
   }
 
-  const values = { setOpenProductDetailsModal, openCartModal, toggleCartModal, setOpenCartModal, openAlertBox, isLogin, setIsLogin, userData, setUserData, address, setAddress, catData, setCatData, productsData, setProductsData, handleOpenProductdetailModel, googleLogIn , isLoading, setIsLoading}
+  const getmyListData = () =>{
+      fetchDataFromApi('/api/myList').then((res) => {
+      if (res?.error === false) {
+        setCartData(res?.data)
+      }
+    })
+  }
+
+
+  const values = { setOpenProductDetailsModal, openCartModal, toggleCartModal, setOpenCartModal, openAlertBox, isLogin, setIsLogin, userData, setUserData, addToCart, address, setAddress, catData, setCatData, productsData, setProductsData, handleOpenProductdetailModel, googleLogIn, isLoading, setIsLoading, cartData, setCartData, getCartItems, handleAddToMyList, myListData, getmyListData, setIsAddedMyList, isAddedMyList }
 
   return (
     <>
       <BrowserRouter>
-      <ScrollToTop />
+        <ScrollToTop />
         <MyContext.Provider value={values}>
           <Header />
           <div className='min-h-screen'>

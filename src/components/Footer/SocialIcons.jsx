@@ -76,7 +76,7 @@ const SocialIcons = () => {
           <p className="text-[12px] md:text-[14px] text-gray-600">
             Designed by{' '}
             <Link
-              to="https://www.facebook.com/MisamMarifaFashionWorld"
+              to="https://www.facebook.com/mmfashionworldonline"
               target="_blank"
               rel="noreferrer"
               className="font-semibold text-gray-900 hover:text-sky-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/40 rounded-sm"
@@ -90,7 +90,7 @@ const SocialIcons = () => {
           {/* Social buttons (soft) */}
           <div className="inline-flex items-center gap-2 rounded-full bg-white/90 px-1.5 py-1 ring-1 ring-gray-200 shadow-sm">
             <Link
-              to="https://www.facebook.com/MisamMarifaFashionWorld"
+              to="https://www.facebook.com/mmfashionworldonline"
               target="_blank"
               rel="noreferrer"
               aria-label="Facebook"
@@ -99,8 +99,7 @@ const SocialIcons = () => {
               <FaFacebook className="text-[16px]" />
             </Link>
             <Link
-              to="https://www.facebook.com/MisamMarifaFashionWorld"
-              target="_blank"
+              to="#"
               rel="noreferrer"
               aria-label="Instagram"
               className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-slate-700 ring-1 ring-gray-200 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-rose-50 hover:text-rose-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/40"

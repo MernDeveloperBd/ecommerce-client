@@ -17,7 +17,6 @@
 body{
     font-optical-sizing: auto;
     font-family: "Roboto", sans-serif;
-    background: #f0f2f5;
     color: rgba(0,0,0,0.9);
     overflow-x: hidden;
 }
@@ -282,4 +281,34 @@ body{
 .prod-zoom-main img,
 .prod-zoom-thumbs img {
   image-rendering: auto;
+}
+
+/* loading */
+
+/* Fancy shimmer */
+@keyframes shimmer-sweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.skel {
+  position: relative;
+  overflow: hidden;
+  background-color: #eef2f7; /* light base */
+}
+.skel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,.7) 50%,
+    rgba(255,255,255,0) 100%
+  );
+  transform: translateX(-100%);
+  animation: shimmer-sweep 1.6s infinite;
+}
+/* reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .skel::after { animation: none; }
 }

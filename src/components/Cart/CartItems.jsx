@@ -1,197 +1,109 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { IoCloseSharp } from "react-icons/io5";
-import { VscTriangleDown } from "react-icons/vsc";
-import Stack from '@mui/material/Stack';
+import Stack from "@mui/material/Stack";
 import { Rating } from "@mui/material";
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 
-const CartItems = ({ size, qty }) => {
-    const [sizeanchorEl, setSizeAnchorEl] = useState(null);
-    const [selectedSize, setSelectedSize] = useState(size)
-    const openSize = Boolean(sizeanchorEl);
+const CartItems = ({ data, onRemove, isRemoving }) => {
+  const initialSize = useMemo(() => {
+    if (Array.isArray(data?.productSize) && data.productSize.length) return data.productSize[0];
+    return data?.productSize || data?.size || "-";
+  }, [data?.productSize, data?.size]);
 
-    const [qtyanchorEl, setQtyAnchorEl] = useState(null);
-    const [selectedQty, setSelectedQty] = useState(qty)
-    const openQty = Boolean(qtyanchorEl);
+  const price = Number(data?.price) || 0;
+  const oldPrice = Number(data?.oldPrice) || 0;
+  const qty = Number(data?.quantity) || 1;
 
-    const handleClickSize = (event) => {
-        setSizeAnchorEl(event.currentTarget);
-    };
-    const handleCloseSize = (value) => {
-        setSizeAnchorEl(null);
-        if (value !== null) {
-            setSelectedSize(value)
-        }
-    };
+  const discountPercent =
+    oldPrice > price && oldPrice > 0
+      ? Math.round(((oldPrice - price) / oldPrice) * 100)
+      : 0;
 
-    const handleClickQty = (event) => {
-        setQtyAnchorEl(event.currentTarget);
-    };
-    const handleCloseQty = (value) => {
-        setQtyAnchorEl(null);
-        if (value !== null) {
-            setSelectedQty(value)
-        }
-    };
+  const lineTotal = price * qty;
+  const productLink = `/productDetails/${data?.productId || ""}`;
 
-    return (
-        <div>
-            {/* 1st  */}
-            <div className="cartItem w-full p-2 flex items-center gap-4 pb-2 border-b border-[rgba(0,0,0,0.2)]">
-                <div className="img w-[15%]  rounded-md overflow-hidden">
-                    <Link to={`/product/001`} className="group">
-                        <img src="https://i.ibb.co/p6N0c8Ys/Digital-Print-Lone-Three-Piece-3-kenakatabazar-bd.jpg" alt="cart image" className="w-full  group-hover:scale-105 transition-all duration-500" />
-                    </Link>
-                </div>
-                {/* info */}
-                <div className="info w-[85%] relative">
-                    <IoCloseSharp className="absolute top-[10px] right-[0px] text-[22px] cursor-pointer" />
-                    <p className="text-[13px] mb-0">Panjabi brand</p>
-                    <Link to={`/product/001`} className="link inline-block"><h3 className="text-[16px] font-semibold ">Product title with full title</h3></Link>
-                    {/* Ratings */}
-                    <Stack spacing={1} className="mt-1">
-                        <Rating name="size-small" defaultValue={4} size="small" readOnly />
-                    </Stack>
-                    {/* size and qty */}
-                    <div className="flex items-center gap-2 mt-2">
-                        {/* size */}
-                        <div className=" relative">
-                            <span className="flex gap-1 items-center justify-center bg-[#f1f1f1] text-[12px] font-[600] py-1 px-2 rounded cursor-pointer" onClick={handleClickSize}>Size:<span> {selectedSize}</span><VscTriangleDown /></span>
-                            <Menu
-                                id="size-menu"
-                                anchorEl={sizeanchorEl}
-                                open={openSize}
-                                onClose={handleCloseSize}
-                                slotProps={{
-                                    list: {
-                                        'aria-labelledby': 'basic-button',
-                                    },
-                                }}
-                            >
-                                <MenuItem onClick={() => handleCloseSize('S')}>S</MenuItem>
-                                <MenuItem onClick={() => handleCloseSize('M')}>M</MenuItem>
-                                <MenuItem onClick={() => handleCloseSize('L')}>L</MenuItem>
-                                <MenuItem onClick={() => handleCloseSize('XL')}>XL</MenuItem>
-                                <MenuItem onClick={() => handleCloseSize('XXL')}>XXL</MenuItem>
-                            </Menu>
-                        </div>
-                        {/* Qty */}
-                        <div className=" relative">
-                            <span className="flex gap-1 items-center justify-center bg-[#f1f1f1] text-[12px] font-[600] py-1 px-2 rounded cursor-pointer" onClick={handleClickQty}>Qty:<span> {selectedQty}</span><VscTriangleDown /></span>
-                            <Menu
-                                id="size-menu"
-                                anchorEl={qtyanchorEl}
-                                open={openQty}
-                                onClose={handleCloseQty}
-                                slotProps={{
-                                    list: {
-                                        'aria-labelledby': 'basic-button',
-                                    },
-                                }}
-                            >
-                                <MenuItem onClick={() => handleCloseQty('1')}>1</MenuItem>
-                                <MenuItem onClick={() => handleCloseQty('2')}>2</MenuItem>
-                                <MenuItem onClick={() => handleCloseQty('3')}>3</MenuItem>
-                                <MenuItem onClick={() => handleCloseQty('4')}>4</MenuItem>
-                                <MenuItem onClick={() => handleCloseQty('5')}>5</MenuItem>
-                                <MenuItem onClick={() => handleCloseQty('6')}>6</MenuItem>
-                                <MenuItem onClick={() => handleCloseQty('7')}>7</MenuItem>
-                                <MenuItem onClick={() => handleCloseQty('8')}>8</MenuItem>
-                                <MenuItem onClick={() => handleCloseQty('9')}>9</MenuItem>
-                                <MenuItem onClick={() => handleCloseQty('10')}>10</MenuItem>
+  return (
+    <div className="group relative grid grid-cols-[92px,1fr] md:grid-cols-[104px,1fr] gap-3 rounded-xl ring-1 ring-gray-200 bg-white p-2 md:p-3 mb-3 shadow-sm hover:shadow-md transition">
+      {/* Remove */}
+      <button
+        type="button"
+        onClick={() => !isRemoving && onRemove?.(data)}
+        aria-label="Remove item"
+        disabled={isRemoving}
+        className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition disabled:opacity-50"
+      >
+        <IoCloseSharp className="text-[18px]" />
+      </button>
 
-                            </Menu>
-                        </div>
+      {/* Image */}
+      <div className="shrink-0 h-[92px] w-[92px] md:h-[104px] md:w-[104px] overflow-hidden rounded-lg ring-1 ring-gray-200">
+        <Link to={productLink} className="block h-full w-full">
+          <img
+            src={data?.image}
+            alt={data?.productTitle || "cart image"}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+          />
+        </Link>
+      </div>
 
-                    </div>
-                    {/* price */}
-                    <div className='flex gap-4 items-center mt-2'>
-                        <span className='text-[14px] font-[500]'>Tk <span>250</span></span>
-                        <span className='text-red-500 line-through text-[14px]'>Tk <span>350</span></span>
-                        <span className='text-red-500 line-through text-[14px]'>55% off</span>
-                    </div>
-                </div>
-            </div>
-            {/* 1st  */}
-            <div className="cartItem w-full p-2 flex items-center gap-4 pb-2 border-b border-[rgba(0,0,0,0.2)]">
-                <div className="img w-[15%]  rounded-md overflow-hidden">
-                    <Link to={`/product/001`} className="group">
-                        <img src="https://i.ibb.co/p6N0c8Ys/Digital-Print-Lone-Three-Piece-3-kenakatabazar-bd.jpg" alt="cart image" className="w-full  group-hover:scale-105 transition-all duration-500" />
-                    </Link>
-                </div>
-                {/* info */}
-                <div className="info w-[85%] relative">
-                    <IoCloseSharp className="absolute top-[10px] right-[0px] text-[22px] cursor-pointer" />
-                    <p className="text-[13px] mb-0">Panjabi brand</p>
-                    <Link to={`/product/001`} className="link inline-block"><h3 className="text-[16px] font-semibold ">Product title with full title</h3></Link>
-                    {/* Ratings */}
-                    <Stack spacing={1} className="mt-1">
-                        <Rating name="size-small" defaultValue={4} size="small" readOnly />
-                    </Stack>
-                    {/* size and qty */}
-                    <div className="flex items-center gap-2 mt-2">
-                        {/* size */}
-                        <div className=" relative">
-                            <span className="flex gap-1 items-center justify-center bg-[#f1f1f1] text-[12px] font-[600] py-1 px-2 rounded cursor-pointer" onClick={handleClickSize}>Size:<span> {selectedSize}</span><VscTriangleDown /></span>
-                            <Menu
-                                id="size-menu"
-                                anchorEl={sizeanchorEl}
-                                open={openSize}
-                                onClose={handleCloseSize}
-                                slotProps={{
-                                    list: {
-                                        'aria-labelledby': 'basic-button',
-                                    },
-                                }}
-                            >
-                                <MenuItem onClick={() => handleCloseSize('S')}>S</MenuItem>
-                                <MenuItem onClick={() => handleCloseSize('M')}>M</MenuItem>
-                                <MenuItem onClick={() => handleCloseSize('L')}>L</MenuItem>
-                                <MenuItem onClick={() => handleCloseSize('XL')}>XL</MenuItem>
-                                <MenuItem onClick={() => handleCloseSize('XXL')}>XXL</MenuItem>
-                            </Menu>
-                        </div>
-                        {/* Qty */}
-                        <div className=" relative">
-                            <span className="flex gap-1 items-center justify-center bg-[#f1f1f1] text-[12px] font-[600] py-1 px-2 rounded cursor-pointer" onClick={handleClickQty}>Qty:<span> {selectedQty}</span><VscTriangleDown /></span>
-                            <Menu
-                                id="size-menu"
-                                anchorEl={qtyanchorEl}
-                                open={openQty}
-                                onClose={handleCloseQty}
-                                slotProps={{
-                                    list: {
-                                        'aria-labelledby': 'basic-button',
-                                    },
-                                }}
-                            >
-                                <MenuItem onClick={() => handleCloseQty('1')}>1</MenuItem>
-                                <MenuItem onClick={() => handleCloseQty('2')}>2</MenuItem>
-                                <MenuItem onClick={() => handleCloseQty('3')}>3</MenuItem>
-                                <MenuItem onClick={() => handleCloseQty('4')}>4</MenuItem>
-                                <MenuItem onClick={() => handleCloseQty('5')}>5</MenuItem>
-                                <MenuItem onClick={() => handleCloseQty('6')}>6</MenuItem>
-                                <MenuItem onClick={() => handleCloseQty('7')}>7</MenuItem>
-                                <MenuItem onClick={() => handleCloseQty('8')}>8</MenuItem>
-                                <MenuItem onClick={() => handleCloseQty('9')}>9</MenuItem>
-                                <MenuItem onClick={() => handleCloseQty('10')}>10</MenuItem>
+      {/* Info */}
+      <div className="min-w-0 pr-8">
+        <Link to={productLink} className="block">
+          <h3 className="text-[13px] md:text-sm font-semibold text-slate-900 line-clamp-2">
+            {data?.productTitle}
+          </h3>
+        </Link>
 
-                            </Menu>
-                        </div>
-
-                    </div>
-                    {/* price */}
-                    <div className='flex gap-4 items-center mt-2'>
-                        <span className='text-[14px] font-[500]'>Tk <span>250</span></span>
-                        <span className='text-red-500 line-through text-[14px]'>Tk <span>350</span></span>
-                        <span className='text-red-500 line-through text-[14px]'>55% off</span>
-                    </div>
-                </div>
-            </div>
+        {/* Rating */}
+        <div className="mt-1">
+          <Stack spacing={0.5}>
+            <Rating name="size-small" value={Number(data?.rating) || 0} size="small" readOnly />
+          </Stack>
         </div>
-    );
+
+        {/* Size + Qty (display only) */}
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          {
+            initialSize === true &&  <span className="inline-flex items-center gap-1 rounded-md bg-gray-50 px-2 py-1 text-[11px] ring-1 ring-gray-200">
+            Size:
+            <span className="font-semibold text-slate-900">{initialSize}</span>
+          </span>
+          }
+         
+
+          <span className="inline-flex items-center gap-1 rounded-md bg-gray-50 px-2 py-1 text-[11px] ring-1 ring-gray-200">
+            Qty:
+            <span className="font-semibold text-slate-900">{qty}</span>
+          </span>
+
+          <span className="inline-flex items-center gap-1 rounded-md bg-gray-50 px-2 py-1 text-[11px] ring-1 ring-gray-200">
+            Stock:
+            <span className={`font-semibold ${(data?.countInStock || 0) > 0 ? "text-emerald-700" : "text-rose-600"}`}>
+              {data?.countInStock ?? 0}
+            </span>
+          </span>
+        </div>
+
+        {/* Prices */}
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          <span className="text-[13px] md:text-[14px] font-extrabold text-slate-900">Tk {price}</span>
+
+          {oldPrice > price && (
+            <>
+              <span className="text-rose-500 line-through text-[12px] md:text-[13px]">Tk {oldPrice}</span>
+              <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 ring-1 ring-emerald-200">
+                {discountPercent}% off
+              </span>
+            </>
+          )}
+
+          <span className="ml-auto text-[12px] md:text-[13px] font-semibold text-primary">
+            Total: Tk {lineTotal}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default CartItems;

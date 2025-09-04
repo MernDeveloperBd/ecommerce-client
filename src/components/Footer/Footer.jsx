@@ -10,9 +10,19 @@ import { IoCloseSharp } from "react-icons/io5";
 import { useContext } from 'react';
 import { MyContext } from "../../App";
 import CartPanel from "../CartPanel/CartPanel";
+import Button from "@mui/material/Button";
+import { Link } from "react-router-dom";
 
-const Footer = () => {
-    const { openCartModal, toggleCartModal } = useContext(MyContext);
+const Footer = () => {  
+    
+    const { openCartModal, toggleCartModal, cartData } = useContext(MyContext);
+// subtotal + free shipping (ঐচ্ছিক)
+const FREE_THRESHOLD = 3000;
+const subtotal = Array.isArray(cartData)
+  ? cartData.reduce((acc, it) => acc + Number(it?.subTotal || 0), 0)
+  : 0;
+const leftForFree = Math.max(0, FREE_THRESHOLD - subtotal);
+
 
     const footerItems = [
         {
@@ -110,19 +120,98 @@ const Footer = () => {
             </div>
 
             {/* Cart Drawer */}
-            <Drawer
-                open={openCartModal}
-                onClose={toggleCartModal(false)}
-                anchor={'right'}
-                PaperProps={{ sx: { width: { xs: '100%', sm: 400 } } }}
-            >
-                <div className="flex items-center justify-between py-3 px-4 border-b border-gray-200">
-                    <h4 className='text-xl font-semibold'>Shopping Cart</h4>
-                    <IoCloseSharp className='text-2xl cursor-pointer' onClick={toggleCartModal(false)} />
-                </div>
-                {/* Cart products */}
-                <CartPanel />
-            </Drawer>
+           <Drawer
+  open={openCartModal}
+  onClose={toggleCartModal(false)}
+  anchor="right"
+  keepMounted
+  ModalProps={{
+    BackdropProps: {
+      sx: {
+        backgroundColor: "rgba(2,6,23,0.5)",
+        backdropFilter: "blur(2px)",
+      },
+    },
+  }}
+  PaperProps={{
+    sx: {
+      width: { xs: "100%", sm: 420 },
+      maxWidth: "100%",
+      borderTopLeftRadius: 16,
+      borderBottomLeftRadius: 16,
+      boxShadow: "0 16px 48px rgba(2,6,23,0.18)",
+      backgroundImage:
+        "linear-gradient(to bottom, rgba(255,255,255,.98), rgba(250,250,255,.96))",
+    },
+  }}
+>
+  {/* Header */}
+  <div className="relative px-4 py-3 border-b border-gray-200/70 bg-gradient-to-r from-sky-50 to-indigo-50">
+    <div className="flex items-center justify-between">
+      <div>
+        <h4 className="text-base md:text-lg font-extrabold tracking-tight text-slate-900">
+          Shopping Cart
+          <span className="ml-2 inline-flex items-center rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-slate-800 ring-1 ring-gray-200">
+            {Array.isArray(cartData) ? cartData.length : 0}
+          </span>
+        </h4>
+        {/* ঐচ্ছিক free shipping info */}
+        {Array.isArray(cartData) && cartData.length > 0 && (
+          <p className="mt-0.5 text-[11px] text-slate-600">
+            {leftForFree > 0 ? (
+              <>
+                Free shipping over Tk {FREE_THRESHOLD} — আপনি আর{" "}
+                <span className="font-semibold text-slate-900">
+                  Tk {leftForFree}
+                </span>{" "}
+                বাড়ালেই ফ্রি!
+              </>
+            ) : (
+              <span className="text-emerald-700">Congrats! Free shipping applied.</span>
+            )}
+          </p>
+        )}
+      </div>
+
+      <button
+        type="button"
+        aria-label="Close cart"
+        onClick={toggleCartModal(false)}
+        className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-slate-700 ring-1 ring-gray-200 shadow-sm hover:bg-gray-50 hover:text-slate-900"
+      >
+        <IoCloseSharp className="text-[18px]" />
+      </button>
+    </div>
+  </div>
+
+  {/* Content */}
+  <div className="relative flex h-full flex-col">
+    {Array.isArray(cartData) && cartData.length > 0 ? (
+      // Cart items panel (আপনার আগের CartPanel)
+      <CartPanel carts={cartData} />
+    ) : (
+      // Empty state — সুন্দর ভিজ্যুয়াল
+      <div className="grid place-items-center px-6 py-10">
+        <div className="text-center">
+          <div className="mx-auto mb-3 h-14 w-14 rounded-full bg-gray-100 grid place-items-center text-3xl">
+            🛒
+          </div>
+          <h5 className="text-sm md:text-base font-semibold text-slate-900">Your cart is empty</h5>
+          <p className="mt-1 text-[12px] text-slate-500">
+            আজই কিছু যোগ করুন — দুর্দান্ত অফার চলছে!
+          </p>
+          <div className="mt-3">
+            <Link to="/productListing" onClick={toggleCartModal(false)}>
+              <Button className="!rounded-full !px-4 !h-9 !bg-purple-800 hover:!bg-slate-800 !text-white !text-[12px] !font-semibold">
+                Continue shopping
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+</Drawer>
         </>
     );
 };

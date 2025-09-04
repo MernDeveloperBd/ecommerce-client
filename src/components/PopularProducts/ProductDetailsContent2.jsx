@@ -1,5 +1,5 @@
 // ProductDetailsContent2.jsx
-import { useState, useMemo, useEffect, useContext } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button, Rating } from "@mui/material";
 import QuantityBox from "../QuantityBox/QuantityBox";
 import { MdOutlineCompareArrows, MdOutlineShoppingCart } from "react-icons/md";
@@ -7,104 +7,15 @@ import { FaRegHeart } from "react-icons/fa";
 import { FiDownloadCloud } from "react-icons/fi";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import PropTypes from "prop-types";
-import { fetchDataFromApi, postData } from "../../utils/api"; // adjust path if needed
-import { MyContext } from "../../App";
+import { fetchDataFromApi } from "../../utils/api"; // adjust path if needed
 
 const ProductDetailsContent2 = ({ item: data, avgRating: avgRatingProp, totalReviews: totalReviewsProp }) => {
   const images = useMemo(() => (Array.isArray(data?.images) ? data.images : []), [data]);
   const [colorActionIndex, setColorActionIndex] = useState(null);
   const [sizeActionIndex, setSizeActionIndex] = useState(null);
   const [downloading, setDownloading] = useState(false);
+  
 
-  const { userData, openAlertBox, setOpenCartModal, getCartItems } = useContext(MyContext) || {};
-  const [addingToCart, setAddingToCart] = useState(false);
-  const [selectedQty, setSelectedQty] = useState(1); // QuantityBox থাকলে এখান থেকে আপডেট করুন
-
-  const productSizes = useMemo(() => {
-    if (Array.isArray(data?.productSize)) return data.productSize.filter(Boolean);
-    return data?.productSize ? [String(data.productSize)] : [];
-  }, [data?.productSize]);
-
-  const selectedColorValue = useMemo(() => {
-  if (typeof colorActionIndex === "number" && Array.isArray(data?.color) && data.color[colorActionIndex]) {
-    return data.color[colorActionIndex];
-  }
-  return Array.isArray(data?.color) && data.color.length ? data.color[0] : "";
-}, [colorActionIndex, data?.color]);
-
-  const selectedSizeValue = useMemo(() => {
-    // যদি ইউজার কোনো size select করে থাকেন
-    if (typeof sizeActionIndex === "number" && productSizes[sizeActionIndex]) {
-      return productSizes[sizeActionIndex];
-    }
-    // না করলে প্রথম size নিন, অথবা ফাঁকা রাখুন
-    return productSizes[0] || "";
-  }, [productSizes, sizeActionIndex]);
-
-
- const handleAddToCart = async () => {
-  if (!userData?._id) {
-    openAlertBox?.("error", "You are not logged in. please login first");
-    return;
-  }
-
-  const inStock = Number(data?.countInStock) || 0;
-  if (inStock <= 0) {
-    openAlertBox?.("error", "Out of stock");
-    return;
-  }
-
-  // Size প্রয়োজন হলে ভ্যালিডেশন
-  if (productSizes.length > 0 && !selectedSizeValue) {
-    openAlertBox?.("error", "Please select a size");
-    return;
-  }
-
-  // Color প্রয়োজন হলে (color array থাকলে first/fallback নেয়া হয়েছে; চাইলে কঠোর ভ্যালিডেশন দিতে পারো)
-  // if (Array.isArray(data?.color) && data.color.length > 0 && !selectedColorValue) {
-  //   openAlertBox?.("error", "Please select a color");
-  //   return;
-  // }
-
-  try {
-    setAddingToCart(true);
-
-    const maxQty = Math.max(1, inStock);
-    const qty = Math.min(Math.max(1, Number(selectedQty) || 1), maxQty);
-    const priceNum = Number(data?.price) || 0;
-
-    const payload = {
-      productId: data?._id,
-      productTitle: data?.name,
-      image: data?.image || data?.images?.[0] || "",
-      price: priceNum,
-      quantity: qty,
-      subTotal: Number((priceNum * qty).toFixed(2)),
-      userId: userData._id,
-      countInStock: inStock,
-      rating: data?.rating ?? 0,
-      oldPrice: data?.oldPrice ?? null,
-      // Variants
-      productSize: selectedSizeValue || null,
-      productColor: selectedColorValue || null,
-      // brand: data?.brand || "", // দরকার হলে আনকমেন্ট করো
-    };
-
-    const res = await postData("/api/cart/add", payload);
-
-    if (res?.error === false) {
-      openAlertBox?.("success", res?.message || "Added to cart");
-      await getCartItems?.();
-      setOpenCartModal?.(true);
-    } else {
-      openAlertBox?.("error", res?.message || "Failed to add to cart");
-    }
-  } catch (e) {
-    openAlertBox?.("error", e?.message || "Network error");
-  } finally {
-    setAddingToCart(false);
-  }
-};
   // Reviews summary (will use props if provided, otherwise fetch)
   const [avgRating, setAvgRating] = useState(typeof avgRatingProp === "number" ? avgRatingProp : 0);
   const [totalReviews, setTotalReviews] = useState(typeof totalReviewsProp === "number" ? totalReviewsProp : 0);
@@ -509,34 +420,15 @@ const ProductDetailsContent2 = ({ item: data, avgRating: avgRatingProp, totalRev
           <div className="flex flex-col gap-3">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-4">
               <div className="qtyBoxWrapper md:w-[64px]">
-                <div className="qtyBoxWrapper md:w-[64px]">
-  <QuantityBox
-    value={selectedQty}
-    onChange={(v) => setSelectedQty(Number(v) || 1)}
-    min={1}
-    max={Math.max(1, Number(data?.countInStock) || 1)}
-    disabled={addingToCart || !(data?.countInStock > 0)}
-  />
-</div>
+                <QuantityBox />
               </div>
 
               <div className="flex gap-2">
-                <Button
-                  onClick={handleAddToCart}
-                  disabled={addingToCart || !(data?.countInStock > 0)}
-                  className="!rounded-full !px-4 !h-9 !bg-sky-600 hover:!bg-sky-700 !text-white !text-[12px] md:!text-[14px] font-bold flex items-center gap-2 disabled:!opacity-60"
-                >
-                  {addingToCart ? (
-                    <>
-                      <AiOutlineLoading3Quarters className="text-[16px] animate-spin" />
-                      Adding...
-                    </>
-                  ) : (
-                    <>
-                      <MdOutlineShoppingCart className="text-[16px]" />
-                      Add To Cart
-                    </>
-                  )}
+                <Button className="!rounded-full !px-4 !h-9 !bg-sky-600 hover:!bg-sky-700 !text-white !text-[12px] md:!text-[14px] font-bold flex items-center gap-2">
+                  <MdOutlineShoppingCart className="text-[16px]" /> Add To Cart
+                </Button>
+                <Button className="!rounded-full !px-4 !h-9 !bg-emerald-600 hover:!bg-emerald-700 !text-white !text-[12px] md:!text-[14px] font-bold">
+                  Buy Now
                 </Button>
               </div>
             </div>
