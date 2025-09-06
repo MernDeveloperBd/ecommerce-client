@@ -305,7 +305,7 @@ const ProductDetails = () => {
 
               {/* Description */}
               {activeTab === 0 && (
-                <div className="relative rounded-2xl p-[1.2px] bg-gradient-to-br from-sky-100 via-indigo-100 to-violet-100">
+                <div className="relative rounded-2xl md:w-[80%] mx-auto p-[1.2px] bg-gradient-to-br from-sky-100 via-indigo-100 to-violet-100">
                   <div className="relative overflow-hidden rounded-2xl bg-white/90 backdrop-blur p-3 md:p-5 ring-1 ring-gray-200 shadow-sm">
                     <div
                       className="pointer-events-none absolute inset-0 opacity-60"

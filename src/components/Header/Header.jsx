@@ -305,11 +305,13 @@ const Header = () => {
                                 <li>
                                     <Tooltip title="Wishlist">
                                         <IconButton>
+                                            <Link to='/my-list'>
                                             <Stack spacing={1} direction="row" sx={{ color: 'action.active' }}>
                                                 <Badge color="secondary" badgeContent={2} showZero>
                                                     <FaRegHeart className="text-xl" />
                                                 </Badge>
                                             </Stack>
+                                            </Link>
                                         </IconButton>
                                     </Tooltip>
                                 </li>

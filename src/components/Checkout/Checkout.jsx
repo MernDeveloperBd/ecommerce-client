@@ -1,11 +1,14 @@
-import { Button } from '@mui/material';
-import { TextField, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+import { Button, TextField, MenuItem, Select, FormControl, InputLabel, RadioGroup, Radio, FormControlLabel } from '@mui/material';
 import { Divisions } from '../DataDivision/Divisions';
 import { BsFillBagCheckFill } from 'react-icons/bs';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useContext, useMemo, useState } from 'react';
+import { MyContext } from '../../App';
+import { postData } from '../../utils/api';
+import { useNavigate } from 'react-router-dom';
 
 const Checkout = () => {
+  const { cartData, openAlertBox, userData, getCartItems } = useContext(MyContext);
+
   const [division, setDivision] = useState('');
   const [district, setDistrict] = useState('');
   const [upazila, setUpazila] = useState('');
@@ -15,57 +18,147 @@ const Checkout = () => {
     address: '',
     apartment: '',
     postcode: '',
-    phone: ''
+    phone: '',
+    note: ''
   });
 
-  // Dummy products (তুমি চাইলে cart থেকে আনতে পারবে)
-  const [products] = useState([
-    { id: 1, title: "Product title", qty: 1, price: 1250 },
-    { id: 2, title: "Product title", qty: 1, price: 1250 },
-    { id: 3, title: "Product title", qty: 1, price: 1250 },
-    { id: 4, title: "Product title", qty: 1, price: 1250 },
-  ]);
+  const [paymentMethod, setPaymentMethod] = useState('COD'); // 'COD' | 'BKASH'
+  const [bkashNumber, setBkashNumber] = useState('');
+  const [bkashTrxId, setBkashTrxId] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-  const total = products.reduce((sum, p) => sum + p.price * p.qty, 0);
+  const navigate = useNavigate();
+
+  // Public config for showing the receiver number (frontend)
+  const BKASH_RECEIVER =
+    (typeof import.meta !== 'undefined' && import.meta.env?.VITE_BKASH_RECEIVER) ||
+    (typeof process !== 'undefined' && process.env?.REACT_APP_BKASH_RECEIVER) ||
+    '01572035173';
+
+  const selectedDivision = useMemo(
+    () => Divisions.find((d) => d.key === division),
+    [division]
+  );
+  const selectedDistrict = useMemo(
+    () => selectedDivision?.districts.find((dist) => dist.key === district),
+    [selectedDivision, district]
+  );
+
+  // Totals
+  const { subtotal, discount, shipping, grandTotal, insideDhaka } = useMemo(() => {
+    const sub = Array.isArray(cartData)
+      ? cartData.reduce((sum, item) => sum + Number(item?.price || 0) * Number(item?.quantity || 0), 0)
+      : 0;
+
+    const disc = sub > 3000 ? Math.round(sub * 0.10) : 0;
+    const isInsideDhaka = (selectedDistrict?.label || '').toLowerCase().includes('dhaka');
+    const ship = sub > 5000 ? 0 : (isInsideDhaka ? 80 : 140);
+    const total = Math.max(0, sub - disc + ship);
+
+    return {
+      subtotal: sub,
+      discount: disc,
+      shipping: ship,
+      grandTotal: total,
+      insideDhaka: isInsideDhaka
+    };
+  }, [cartData, selectedDistrict]);
 
   const handleDivisionChange = (e) => {
     setDivision(e.target.value);
     setDistrict('');
     setUpazila('');
   };
-
   const handleDistrictChange = (e) => {
     setDistrict(e.target.value);
     setUpazila('');
   };
+  const handleUpazilaChange = (e) => setUpazila(e.target.value);
 
-  const handleUpazilaChange = (e) => {
-    setUpazila(e.target.value);
+  const handleChange = (e) =>
+    setFormData((p) => ({ ...p, [e.target.name]: e.target.value }));
+
+  const validate = () => {
+    if (!userData?._id) {
+      openAlertBox('error', 'You are not logged in. please login first');
+      return false;
+    }
+    if (!cartData || cartData.length === 0) {
+      openAlertBox('error', 'Your cart is empty.');
+      return false;
+    }
+    const requiredFields = ['name', 'email', 'address', 'postcode', 'phone'];
+    for (const f of requiredFields) {
+      if (!formData[f]) {
+        openAlertBox('error', `Please provide ${f}`);
+        return false;
+      }
+    }
+    if (!division || !district || !upazila) {
+      openAlertBox('error', 'Please select Division, District and Upazila');
+      return false;
+    }
+    if (paymentMethod === 'BKASH') {
+      if (!bkashNumber || !bkashTrxId) {
+        openAlertBox('error', 'Please provide bKash number and transaction ID');
+        return false;
+      }
+    }
+    return true;
   };
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      openAlertBox('success', 'Copied!');
+    } catch {
+      openAlertBox('error', 'Copy failed');
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     if (e) e.preventDefault();
-    const data = {
-      ...formData,
-      division,
-      district,
-      upazila,
-      products,
-      total
-    };
-    console.log("✅ Checkout Data:", data);
-    alert("Checkout data has been logged in console ✅");
-  };
+    if (!validate()) return;
 
-  const selectedDivision = Divisions.find((d) => d.key === division);
-  const selectedDistrict = selectedDivision?.districts.find((dist) => dist.key === district);
+    try {
+      setSubmitting(true);
+
+      const payload = {
+        shippingAddress: {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address,
+          apartment: formData.apartment,
+          postcode: formData.postcode,
+          divisionKey: division,
+          divisionLabel: selectedDivision?.label || '',
+          districtKey: district,
+          districtLabel: selectedDistrict?.label || '',
+          upazila
+        },
+        payment: {
+          method: paymentMethod,
+          bkash: paymentMethod === 'BKASH' ? { number: bkashNumber, trxId: bkashTrxId } : null
+        },
+        customerNote: formData.note?.trim() || '',
+        previewTotals: { subtotal, discount, shipping, grandTotal }
+      };
+
+      const res = await postData('/api/order', payload);
+      if (res?.error === false) {
+        openAlertBox('success', 'Order placed successfully 🎉');
+        await getCartItems(); // cart becomes empty
+        navigate('/my-orders', { replace: true });
+      } else {
+        openAlertBox('error', res?.message || 'Order failed');
+      }
+    } catch (err) {
+      openAlertBox('error', 'Something went wrong while placing order');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <section className="py-10">
@@ -78,28 +171,10 @@ const Checkout = () => {
               {/* Name + Email */}
               <div className="flex items-center gap-5 pb-3">
                 <div className="col w-[50%]">
-                  <TextField
-                    className="w-full"
-                    label="Full Name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    variant="outlined"
-                    size="small"
-                    required
-                  />
+                  <TextField className="w-full" label="Full Name" name="name" value={formData.name} onChange={handleChange} variant="outlined" size="small" required />
                 </div>
                 <div className="col w-[50%]">
-                  <TextField
-                    className="w-full"
-                    label="Email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    variant="outlined"
-                    size="small"
-                    required
-                  />
+                  <TextField className="w-full" label="Email" name="email" value={formData.email} onChange={handleChange} variant="outlined" size="small" required />
                 </div>
               </div>
 
@@ -107,29 +182,12 @@ const Checkout = () => {
               <h4 className="text-[14px] font-[500] mb-3">Street Address *</h4>
               <div className="flex items-center gap-5 pb-3">
                 <div className="col w-full">
-                  <TextField
-                    className="w-full"
-                    label="Your full address"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    variant="outlined"
-                    size="small"
-                    required
-                  />
+                  <TextField className="w-full" label="Your full address" name="address" value={formData.address} onChange={handleChange} variant="outlined" size="small" required />
                 </div>
               </div>
               <div className="flex items-center gap-5 pb-3">
                 <div className="col w-full">
-                  <TextField
-                    className="w-full"
-                    label="Apartment, suite, unit etc (optional)"
-                    name="apartment"
-                    value={formData.apartment}
-                    onChange={handleChange}
-                    variant="outlined"
-                    size="small"
-                  />
+                  <TextField className="w-full" label="Apartment, suite, unit etc (optional)" name="apartment" value={formData.apartment} onChange={handleChange} variant="outlined" size="small" />
                 </div>
               </div>
 
@@ -140,78 +198,123 @@ const Checkout = () => {
                     <InputLabel>Division *</InputLabel>
                     <Select value={division} onChange={handleDivisionChange} required>
                       {Divisions.map((d) => (
-                        <MenuItem key={d.key} value={d.key}>
-                          {d.label}
-                        </MenuItem>
+                        <MenuItem key={d.key} value={d.key}>{d.label}</MenuItem>
                       ))}
                     </Select>
                   </FormControl>
                 </div>
-
                 <div className="col w-[33%]">
                   <FormControl fullWidth size="small" disabled={!division}>
                     <InputLabel>District *</InputLabel>
                     <Select value={district} onChange={handleDistrictChange} required>
                       {selectedDivision?.districts.map((dist) => (
-                        <MenuItem key={dist.key} value={dist.key}>
-                          {dist.label}
-                        </MenuItem>
+                        <MenuItem key={dist.key} value={dist.key}>{dist.label}</MenuItem>
                       ))}
                     </Select>
                   </FormControl>
                 </div>
-
                 <div className="col w-[33%]">
                   <FormControl fullWidth size="small" disabled={!district}>
                     <InputLabel>Upazila *</InputLabel>
                     <Select value={upazila} onChange={handleUpazilaChange} required>
                       {selectedDistrict?.upazilas.map((u) => (
-                        <MenuItem key={u} value={u}>
-                          {u}
-                        </MenuItem>
+                        <MenuItem key={u} value={u}>{u}</MenuItem>
                       ))}
                     </Select>
                   </FormControl>
                 </div>
               </div>
 
+              {/* Postcode + Phone */}
               <div className="flex gap-2 w-full">
-                {/* Postcode */}
                 <div className='md:w-[50%]'>
                   <h4 className="text-[14px] font-[500] mb-3">Postcode / Zip *</h4>
                   <div className="flex items-center gap-5 pb-3">
                     <div className="col w-full">
-                      <TextField
-                        className="w-full"
-                        label="Postcode / Zip"
-                        name="postcode"
-                        value={formData.postcode}
-                        onChange={handleChange}
-                        variant="outlined"
-                        size="small"
-                        required
-                      />
+                      <TextField className="w-full" label="Postcode / Zip" name="postcode" value={formData.postcode} onChange={handleChange} variant="outlined" size="small" required />
                     </div>
                   </div>
                 </div>
-                {/* Phone */}
                 <div className='md:w-[50%]'>
                   <h4 className="text-[14px] font-[500] mb-3">Phone Number *</h4>
                   <div className="flex items-center gap-5 pb-3">
                     <div className="col w-full">
+                      <TextField className="w-full" label="Phone Number" name="phone" value={formData.phone} onChange={handleChange} variant="outlined" size="small" required />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Payment */}
+              <div className="pt-4">
+                <h4 className="text-[14px] font-[600] mb-2">Payment Method</h4>
+                <RadioGroup row value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
+                  <FormControlLabel value="COD" control={<Radio />} label="Cash on Delivery" />
+                  <FormControlLabel value="BKASH" control={<Radio />} label="bKash (Manual)" />
+                </RadioGroup>
+
+                {paymentMethod === 'BKASH' && (
+                  <>
+                    <div className="bg-pink-50 border border-pink-200 rounded p-3 mt-3 text-sm">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          bKash receiver number: <b>{BKASH_RECEIVER}</b>
+                        </div>
+                        <Button size="small" onClick={() => copyToClipboard(BKASH_RECEIVER)} className="!normal-case">Copy</Button>
+                      </div>
+                      <ul className="list-disc ml-6 mt-2">
+                        <li>Send money to the above number.</li>
+                        <li>Then enter your sender number and the transaction ID below.</li>
+                      </ul>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                       <TextField
-                        className="w-full"
-                        label="Phone Number"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        variant="outlined"
+                        label="bKash Sender Number"
+                        value={bkashNumber}
+                        onChange={(e) => setBkashNumber(e.target.value)}
+                        size="small"
+                        required
+                      />
+                      <TextField
+                        label="bKash Transaction ID"
+                        value={bkashTrxId}
+                        onChange={(e) => setBkashTrxId(e.target.value)}
                         size="small"
                         required
                       />
                     </div>
-                  </div>
-                </div>
+                  </>
+                )}
+              </div>
+
+              {/* Order Note */}
+              <div className="pt-4">
+                <h4 className="text-[14px] font-[600] mb-2">Order Note (Optional)</h4>
+                <TextField
+                  name="note"
+                  value={formData.note}
+                  onChange={handleChange}
+                  multiline
+                  rows={3}
+                  placeholder="ডেলিভারি নোট/স্পেশাল ইন্সট্রাকশন লিখুন (max 500 chars)"
+                  fullWidth
+                  size="small"
+                  variant="outlined"
+                  inputProps={{ maxLength: 500 }}
+                  helperText={`${formData.note.length}/500`}
+                />
+              </div>
+
+              {/* Place Order */}
+              <div className="pt-4">
+                <Button
+                  onClick={handleSubmit}
+                  disabled={submitting || !cartData?.length}
+                  className="bg-btn hover:bg-btn w-full flex items-center gap-2 !text-white"
+                >
+                  <BsFillBagCheckFill className="text-[20px]" />
+                  {submitting ? 'Placing order...' : 'Place Order'}
+                </Button>
               </div>
             </form>
           </div>
@@ -227,45 +330,59 @@ const Checkout = () => {
             </div>
 
             <div className="scrollSm max-h-[250px] overflow-y-scroll overflow-x-hidden pr-2 mb-5">
-              {products.map((p) => (
-                <div
-                  key={p.id}
-                  className="flex items-center justify-between py-2"
-                >
+              {cartData?.map((item, index) => (
+                <div key={index} className="flex items-center justify-between py-2">
                   <div className="part1 flex items-center gap-3">
-                    <div className="img w-[50px] h-[50px] overflow-hidden rounded-md group cursor-pointer">
+                    <div className="img w-[50px] h-[50px] overflow-hidden rounded-md group cursor-pointer bg-gray-50">
                       <img
-                        src="https://i.ibb.co/dxfD53n/Digital-Print-Lone-Three-Piece-7-kenakatabazar-bd.jpg"
-                        alt=""
-                        className="w-full transition-all group-hover:scale-105"
+                        src={item?.image || 'https://via.placeholder.com/50'}
+                        alt={item?.productTitle}
+                        className="w-full h-full object-cover transition-all group-hover:scale-105"
                       />
                     </div>
                     <div className="info">
-                      <h4 className="text-[14px]">{p.title}</h4>
-                      <p className="text-[14px]">
-                        Qty: <span>{p.qty}</span>
-                      </p>
+                      <h4 className="text-[14px]">{item?.productTitle}</h4>
+                      <p className="text-[12px] text-gray-500">Qty: {item?.quantity}</p>
                     </div>
                   </div>
                   <span className="text-[14px] font-[500] text-primary">
-                    TK <span>{p.price}</span>
+                    TK {(Number(item?.price) * Number(item?.quantity)).toFixed(0)}
                   </span>
                 </div>
               ))}
-              <div className="text-right">
-                <h4 className="text">Total: {total} TK</h4>
+            </div>
+
+            {/* Totals */}
+            <div className="space-y-2 text-[14px]">
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <span>TK {subtotal.toFixed(0)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Discount {subtotal > 3000 ? '(10%)' : ''}</span>
+                <span className={discount ? 'text-green-600' : ''}>- TK {discount.toFixed(0)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Shipping {subtotal > 5000 ? '(Free)' : insideDhaka ? '(Dhaka)' : '(Outside Dhaka)'}</span>
+                <span>TK {shipping.toFixed(0)}</span>
+              </div>
+              <div className="flex justify-between font-bold border-t pt-2">
+                <span>Total</span>
+                <span>TK {grandTotal.toFixed(0)}</span>
               </div>
             </div>
 
-            {/* Checkout button - triggers same submit */}
-            <Link to='/checkout'>
-            <Button
-              onClick={handleSubmit}
-              className="bg-btn hover:bg-btn w-full flex items-center gap-2"
-            >
-              <BsFillBagCheckFill className="text-[20px]" /> Checkout
-            </Button>
-            </Link>
+            {/* Secondary place order button */}
+            <div className="mt-4">
+              <Button
+                onClick={handleSubmit}
+                disabled={submitting || !cartData?.length}
+                className="bg-btn hover:bg-btn w-full flex items-center gap-2 !text-white"
+              >
+                <BsFillBagCheckFill className="text-[20px]" /> {submitting ? 'Placing order...' : 'Place Order'}
+              </Button>
+            </div>
+
           </div>
         </div>
       </div>

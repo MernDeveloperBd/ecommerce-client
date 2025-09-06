@@ -87,55 +87,53 @@ function App() {
     return signInWithPopup(auth, googleProvider)
   }
 
-  // 1) on mount -> isLogin derive from token
+   
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     setIsLogin(Boolean(token));
   }, []);
+  
+// 1) Cart ফেচ (setCartData করুন)
+const getCartItems = () => {
+  fetchDataFromApi('/api/cart/getItems').then((res) => {
+    if (res?.error === false) {
+      setCartData(res?.data);
+    }
+  });
+};
 
-  // 2) when logged in -> fetch user + cart
-  useEffect(() => {
-    if (!isLogin) return;
+// 2) MyList ফেচ (setMyListData করুন)
+const getmyListData = () => {
+  fetchDataFromApi('/api/myList').then((res) => {
+    console.log(res);
+    
+    if (res?.error === false) {
+      setMyListData(res?.data);
+    }
+  });
+};
 
-    fetchDataFromApi(`/api/user/user-details`).then((res) => {
-      if (res?.error === false) {
-        setUserData(res?.data);
-      } else if (res?.response?.data?.error === true) {
-        if (res?.response?.data?.message === "You have got login") {
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
-          openAlertBox("error", "Your session is closed. please login again");
-          setIsLogin(false);
-          window.location.href = "/login";
-        }
+// 3) লগইন হলে user, cart, myList ফেচ করুন
+useEffect(() => {
+  if (!isLogin) return;
+
+  fetchDataFromApi(`/api/user/user-details`).then((res) => {
+    if (res?.error === false) {
+      setUserData(res?.data);
+    } else if (res?.response?.data?.error === true) {
+      if (res?.response?.data?.message === "You have got login") {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        openAlertBox("error", "Your session is closed. please login again");
+        setIsLogin(false);
+        window.location.href = "/login";
       }
-    });
+    }
+  });
 
-    getCartItems();
-  }, [isLogin]);
-
-  /*  useEffect(() => {
-     const token = localStorage.getItem("accessToken");
-     if (token !== undefined && token !== null && token !== "") {
-       setIsLogin(true)
- 
-       fetchDataFromApi(`/api/user/user-details`).then((res) => {
-         setUserData(res?.data)
-         if (res?.response?.data?.error === true) {
-           if (res?.response?.data?.message == 'You have got login') {
-             localStorage.removeItem("accessToken");
-             localStorage.removeItem("refreshToken");
-             openAlertBox("error", "Your session is closed. please login again")
-             window.location.href = '/login'
-             setIsLogin(false)
-           }
-         }
-       })
-       getCartItems()
-     } else {
-       setIsLogin(false)
-     }
-   }, [setIsLogin]) */
+  getCartItems();
+  getmyListData(); // <-- add this
+}, [isLogin]);
 
   useEffect(() => {
     fetchDataFromApi(`/api/category`).then((res) => {
@@ -193,15 +191,10 @@ function App() {
       }
 
     })
+   
   };
 
-  const getCartItems = () => {
-    fetchDataFromApi('/api/cart/getItems').then((res) => {
-      if (res?.error === false) {
-        setCartData(res?.data)
-      }
-    })
-  };
+ 
 
   // Handle add to my list
   const handleAddToMyList = (product) => {   
@@ -235,13 +228,6 @@ function App() {
     }
   }
 
-  const getmyListData = () =>{
-      fetchDataFromApi('/api/myList').then((res) => {
-      if (res?.error === false) {
-        setCartData(res?.data)
-      }
-    })
-  }
 
 
   const values = { setOpenProductDetailsModal, openCartModal, toggleCartModal, setOpenCartModal, openAlertBox, isLogin, setIsLogin, userData, setUserData, addToCart, address, setAddress, catData, setCatData, productsData, setProductsData, handleOpenProductdetailModel, googleLogIn, isLoading, setIsLoading, cartData, setCartData, getCartItems, handleAddToMyList, myListData, getmyListData, setIsAddedMyList, isAddedMyList }

@@ -9,7 +9,7 @@ import { deleteData } from "../../utils/api";
 const FREE_THRESHOLD = 3000;
 
 const Cart = () => {
-  const { cartData, openAlertBox } = useContext(MyContext) || {};
+  const { cartData, openAlertBox , getCartItems} = useContext(MyContext) || {};
   const [items, setItems] = useState(Array.isArray(cartData) ? cartData : []);
   const prevItemsRef = useRef(items);
   const [removingMap, setRemovingMap] = useState({}); // { lineId: true }
@@ -52,6 +52,7 @@ const Cart = () => {
       const res = await deleteData(`/api/cart/delete_cart_item/${id}`);
       const msg = res?.message || res?.data?.message || "Item removed";
       openAlertBox?.("success", msg);
+      getCartItems()
     } catch (e) {
       // setItems(prev);
       openAlertBox?.("error", e?.message || "Failed to remove item");
