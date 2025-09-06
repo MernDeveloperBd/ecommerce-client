@@ -44,6 +44,14 @@ const ProductItemListView = ({ product }) => {
   const [selectedTabName, setSelectedTabName] = useState(null);
 const [activeColorTab, setActiveColorTab] = useState(null);
 const [selectedColor, setSelectedColor] = useState("");
+
+  // Only these roles can see resellingPrice
+  const canSeeResell = useMemo(() => {
+    const role = String(userData?.role || '').trim().toLowerCase();
+    // wholeseller spelling variations covered
+    const allowed = ['admin', 'reseller', 'wholeseller', 'wholesaler'];
+    return allowed.includes(role) || userData?.isAdmin === true;
+  }, [userData?.role, userData?.isAdmin]);
   // Discount
   const discount =
     oldPrice && price ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
@@ -311,11 +319,13 @@ const [selectedColor, setSelectedColor] = useState("");
             )}
           </div>
 
-          {/* reselling price (chip) */}
-          {typeof resellingPrice !== 'undefined' && resellingPrice !== null && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700 md:self-end">
-              Resell: Tk {resellingPrice}
-            </span>
+            {/* Reselling price: ONLY for allowed roles */}
+          {canSeeResell && resellingPrice != null && (
+            <div className="flex items-center justify-between">
+              <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
+                Resell: Tk {resellingPrice}
+              </span>
+            </div>
           )}
         </div>
       </div>
