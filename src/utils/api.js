@@ -81,7 +81,7 @@ export const editData = async (url, updateData) => {
   return response;
 };
 
-export const deleteData = async (url) => {
+/* export const deleteData = async (url) => {
   const token = localStorage.getItem("accessToken");
   const params = {
     headers: {
@@ -91,4 +91,20 @@ export const deleteData = async (url) => {
   };
   const { res } = await axios.delete(apiUrl + url, params);
   return res;
+}; */
+
+export const deleteData = async (url, config = {}) => {
+  try {
+    const res = await apiUrl.delete(url, config);
+    const data = res?.data ?? {};
+    return {
+      ...data,
+      error: data.error ?? false,
+      success: data.success ?? (res?.status >= 200 && res?.status < 300),
+      status: res?.status
+    };
+  } catch (err) {
+    const data = err?.response?.data ?? {};
+    return { ...data, error: true, success: false, status: err?.response?.status };
+  }
 };

@@ -8,66 +8,52 @@ import { deleteData } from "../../utils/api";
 const MyList = () => {
   const {
     myListData,
-    setMyListData,
+    setMyListData,     // <-- must exist in context
     getmyListData,
-    openAlertBox,
-    addToCart,
-    userData
+    openAlertBox
   } = useContext(MyContext);
 
   useEffect(() => {
     getmyListData();
   }, []);
 
-  // Optimistic delete
+  // Delete (optimistic)
   const handleDelete = async (id) => {
     if (!id) return;
     const ok = window.confirm("Do you want to remove this item?");
     if (!ok) return;
 
-    const prev = myListData;
-    // UI থেকে আগে রিমুভ
-    setMyListData((list) => list.filter((x) => x._id !== id));
-
-    try {
-      // আপনার রুট যদি আলাদা হয় (e.g., /api/myList/delete/:id), এখানে আপডেট করুন
-      const res = await deleteData(`/api/myList/${id}`);
-      const success = res?.success === true || res?.error === false || res?.status === 200 || res?.status === 204;
-      if (success) {
-        openAlertBox("success", res?.message || "Removed from My List");
-        // সার্ভার sync চাইলে
-        // await getmyListData();
-      } else {
-        setMyListData(prev);
-        openAlertBox("error", res?.message || "Failed to remove");
-      }
-    } catch (e) {
-      setMyListData(prev);
-      openAlertBox("error", "Failed to remove");
-    }
-  };
-
-  // Add to Cart (১টা করে)
-  const handleAddToCart = (item) => {
-    if (!userData?._id) {
-      openAlertBox("error", "You are not logged in. please login first");
+    if (typeof setMyListData !== 'function') {
+      console.warn('setMyListData missing from context');
+      await getmyListData();
       return;
     }
-    // MyList আইটেম থেকে cart product shape বানালাম
-    const product = {
-      _id: item?.productId,
-      name: item?.productTitle,
-      image: item?.image,
-      rating: item?.rating,
-      price: item?.price,
-      oldPrice: item?.oldPrice,
-      brand: item?.brand,
-      productSize: item?.productSize,
-      productColor: item?.productColor,
-      countInStock: item?.countInStock // না থাকলে সার্ভার-সাইড চেক ideally
-    };
-    addToCart(product, userData?._id, 1);
+
+    const prev = myListData;
+    setMyListData((list) => list.filter((x) => x._id !== id)); // UI first
+
+    // Try RESTful: DELETE /api/myList/:id
+    let res = await deleteData(`/api/myList/${id}`);
+    let success = res?.success === true || res?.error === false || res?.status === 200 || res?.status === 204;
+
+    // Fallback: if your route is /api/myList/delete/:id
+    if (!success) {
+      res = await deleteData(`/api/myList/${id}`);
+      success = res?.success === true || res?.error === false || res?.status === 200 || res?.status === 204;
+    }
+
+    if (success) {
+      openAlertBox("success", res?.message || "Removed from My List");
+      // Optionally re-fetch to be 100% sync:
+      // await getmyListData();
+    } else {
+      setMyListData(prev); // rollback
+      openAlertBox("error", res?.message || "Failed to remove");
+    }
   };
+
+ 
+  const count = Array.isArray(myListData) ? myListData.length : 0;
 
   return (
     <section className="py-10 w-full">
@@ -82,19 +68,13 @@ const MyList = () => {
             <div className="py-2 px-3 border-b border-[rgba(0,0,0,0.2)]">
               <h2 className="text-xl font-bold">My Lists</h2>
               <p>
-                There are{" "}
-                <span className="font-bold text-primary">
-                  {Array.isArray(myListData) ? myListData.length : 0}
-                </span>{" "}
-                Products in my list
+                There are <span className="font-bold text-primary">{count}</span> Products in my list
               </p>
             </div>
 
-            {/* items */}
             <MyListItem
               items={Array.isArray(myListData) ? myListData : []}
               onDelete={handleDelete}
-              onAddToCart={handleAddToCart}
             />
           </div>
         </div>

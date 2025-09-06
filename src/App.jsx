@@ -93,7 +93,39 @@ function App() {
     setIsLogin(Boolean(token));
   }, []);
   
-// 1) Cart ফেচ (setCartData করুন)
+// Add To Cart (আগের মতোই রাখতে পারেন)
+const addToCart = (product, userId, quantity = 1) => {
+  if (!userId) {
+    openAlertBox("error", "You are not logged in. please login first");
+    return;
+  }
+  const data = {
+    productTitle: product?.name,
+    image: product?.image || product?.images?.[0] || "",
+    rating: product?.rating,
+    price: product?.price,
+    quantity,
+    subTotal: parseInt(product?.price * quantity),
+    productId: product?._id,
+    countInStock: product?.countInStock, // server ideally should validate
+    userId,
+    brand: product?.brand,
+    productSize: product?.productSize,
+    productColor: product?.productColor,
+    oldPrice: product?.oldPrice
+  };
+
+  postData('/api/cart/add', data).then((res) => {
+    if (res?.error === false) {
+      openAlertBox("success", res?.message);
+      getCartItems();
+    } else {
+      openAlertBox('error', res?.message);
+    }
+  });
+};
+
+// 2) fetchers (ফিক্স)
 const getCartItems = () => {
   fetchDataFromApi('/api/cart/getItems').then((res) => {
     if (res?.error === false) {
@@ -102,18 +134,15 @@ const getCartItems = () => {
   });
 };
 
-// 2) MyList ফেচ (setMyListData করুন)
 const getmyListData = () => {
   fetchDataFromApi('/api/myList').then((res) => {
-    console.log(res);
-    
     if (res?.error === false) {
       setMyListData(res?.data);
     }
   });
 };
 
-// 3) লগইন হলে user, cart, myList ফেচ করুন
+// 3) login হলে cart + myList ফেচ করুন
 useEffect(() => {
   if (!isLogin) return;
 
@@ -134,6 +163,9 @@ useEffect(() => {
   getCartItems();
   getmyListData(); // <-- add this
 }, [isLogin]);
+
+
+
 
   useEffect(() => {
     fetchDataFromApi(`/api/category`).then((res) => {
@@ -159,41 +191,7 @@ useEffect(() => {
     }
   };
 
-  // Add To Cart
-  const addToCart = (product, userId, quantity) => {
-    if (userId === undefined) {
-      openAlertBox("error", "You are not logged in. please login first")
-      return false;
-    }
-    const data = {
-      productTitle: product?.name,
-      image: product?.image,
-      rating: product?.rating,
-      price: product?.price,
-      quantity: quantity,
-      subTotal: parseInt(product?.price * quantity),
-      productId: product?._id,
-      countInStock: product?.countInStock,
-      userId: userId,
-      brand: product?.brand,
-      productSize: product?.productSize,
-      productColor: product?.productColor,
-      oldPrice: product?.oldPrice
-    };
-    console.log(data);
-
-    postData('/api/cart/add', data).then((res) => {
-      if (res?.error === false) {
-        openAlertBox("success", res?.message)
-        getCartItems()
-      } else {
-        openAlertBox('error', res?.message)
-      }
-
-    })
-   
-  };
-
+ 
  
 
   // Handle add to my list
@@ -230,7 +228,7 @@ useEffect(() => {
 
 
 
-  const values = { setOpenProductDetailsModal, openCartModal, toggleCartModal, setOpenCartModal, openAlertBox, isLogin, setIsLogin, userData, setUserData, addToCart, address, setAddress, catData, setCatData, productsData, setProductsData, handleOpenProductdetailModel, googleLogIn, isLoading, setIsLoading, cartData, setCartData, getCartItems, handleAddToMyList, myListData, getmyListData, setIsAddedMyList, isAddedMyList }
+  const values = { setOpenProductDetailsModal, openCartModal, toggleCartModal, setOpenCartModal, openAlertBox, isLogin, setIsLogin, userData, setUserData, addToCart, address, setAddress, catData, setCatData, productsData, setProductsData, handleOpenProductdetailModel, googleLogIn, isLoading, setIsLoading, cartData, setCartData, getCartItems, handleAddToMyList, myListData, getmyListData, setIsAddedMyList,setMyListData , isAddedMyList }
 
   return (
     <>
