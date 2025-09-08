@@ -71,7 +71,7 @@ const CategorySlider = () => {
                 1024: { slidesPerView: 6 },
                 1280: { slidesPerView: 8 },
               }}
-              className="w-full !pb-12"
+              className="w-full !pb-6"
             >
               {categories.map((cat) => (
                 <SwiperSlide key={cat._id}>

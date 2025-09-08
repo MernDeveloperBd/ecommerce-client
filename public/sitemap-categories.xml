@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- NOTE: cat=mens-fashion এর জায়গায় আপনার আসল slug/_id বসান; যত খুশি URL যোগ করুন -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.mmfashionworld.com/productListing?cat=mens-fashion</loc>
+    <lastmod>2025-09-06T00:00:00+06:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.mmfashionworld.com/productListing?cat=womens-fashion</loc>
+    <lastmod>2025-09-06T00:00:00+06:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset>

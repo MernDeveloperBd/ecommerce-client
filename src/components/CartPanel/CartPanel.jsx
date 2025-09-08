@@ -14,7 +14,6 @@ const CartPanel = ({ carts }) => {
             openAlertBox("success", "Item removed")
             getCartItems()
         })
-
     }
 
     return (

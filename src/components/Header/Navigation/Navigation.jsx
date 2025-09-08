@@ -142,7 +142,7 @@ const Navigation = () => {
           </div>
 
           {/* Middle - Navigation */}
-          <div className="col_2 w-[70%] z-[1000] hidden md:block">
+          <div className="col_2 w-[70%] z-[80] hidden md:block">
             <div className="rounded-full bg-white/60 backdrop-blur-md ring-1 ring-black/5 shadow-sm px-1 py-0 overflow-visible">
               <ul className="flex items-center gap-1 list-none m-0 p-0">
                 {/* Home */}

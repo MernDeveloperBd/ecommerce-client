@@ -389,9 +389,7 @@ const ProductDetailsContent2 = ({ item: data, avgRating: avgRatingProp, totalRev
               SKU: <span className="font-semibold text-slate-900">{data?.sku}</span>
             </h3>
           )}
-          {data?.createdAt && (
-            <span className="text-xs md:text-sm text-slate-500">Published: {prettyDate}</span>
-          )}
+        
         </div>
 
         {/* Variants */}

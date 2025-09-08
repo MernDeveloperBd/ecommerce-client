@@ -21,9 +21,9 @@ const Home = () => {
             {/* <HomeSlider/> */}
             <div className="container flex  items-center">
                 <div className="part1 w-full md:w-[75%]">
-                    {
-                        catData?.length !== 0 && <HomeSliderV2 homeSliderData={catData} />
-                    }
+                  
+                         <HomeSliderV2 />
+                   
 
                 </div>
                 <div className="part1 w-full md:w-[25%] pl-2 hidden md:block">

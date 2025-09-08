@@ -87,35 +87,92 @@ const AccountSideBar = () => {
                 <p className="text-[11px] md:text-[14px] font-[400]">{userData?.email}</p>
             </div>
             {/*  */}
-            <ul className="list-none pb-5 bg-[#f1f1f1] myAccountTabs">
-                <li className="w-full">
-                    <NavLink to='/my-account' exact={true} activeClassName="isActive" >
-                        <Button className="w-full flex items-center gap-2 !text-left !py-2 !px-5 !justify-start !rounded-none !text-[rgba(0,0,0,0.7)] !font-[600]"><FaRegUser className="text-[15px]" /> My Profile</Button>
-                    </NavLink>
-                </li>
-                <li className="w-full">
-                    <NavLink to='/address' exact={true} activeClassName="isActive" >
-                        <Button className="w-full flex items-center gap-2 !text-left !py-2 !px-5 !justify-start !rounded-none !text-[rgba(0,0,0,0.7)] !font-[600]"><LuMapPinCheck className="text-[15px]" /> Address</Button>
-                    </NavLink>
-                </li>
+           <ul className="list-none pb-5 bg-[#f1f1f1] myAccountTabs">
+  <li className="w-full">
+    <NavLink to="/my-account" end>
+      {({ isActive }) => (
+        <Button
+          component="div"
+          className={[
+            "w-full flex items-center gap-2 !text-left !py-2 !px-5 !justify-start !rounded-none",
+            "!text-[rgba(0,0,0,0.7)] !font-[600]",
+            isActive ? "!bg-rose-50 !text-rose-700" : ""
+          ].join(" ")}
+        >
+          <FaRegUser className="text-[15px]" /> My Profile
+        </Button>
+      )}
+    </NavLink>
+  </li>
 
-                <li className="w-full">
-                    <NavLink to='/my-list' exact={true} activeClassName="isActive" >
-                        <Button className="w-full flex items-center gap-2 !text-left !py-2  !px-5 !justify-start !rounded-none !text-[rgba(0,0,0,0.7)] !font-[600]"><IoMdHeart className="text-[15px]" /> My Lists</Button>
-                    </NavLink>
-                </li>
-                <li className="w-full">
-                    <NavLink to='/my-orders' exact={true} activeClassName="isActive" >
-                        <Button className="w-full flex items-center gap-2 !text-left !py-2  !px-5 !justify-start !rounded-none !text-[rgba(0,0,0,0.7)] !font-[600]"><BsFillBagCheckFill className="text-[15px]" /> Orders</Button>
-                    </NavLink>
-                </li>
+  <li className="w-full">
+    <NavLink to="/address" end>
+      {({ isActive }) => (
+        <Button
+          component="div"
+          className={[
+            "w-full flex items-center gap-2 !text-left !py-2 !px-5 !justify-start !rounded-none",
+            "!text-[rgba(0,0,0,0.7)] !font-[600]",
+            isActive ? "!bg-rose-50 !text-rose-700" : ""
+          ].join(" ")}
+        >
+          <LuMapPinCheck className="text-[15px]" /> Address
+        </Button>
+      )}
+    </NavLink>
+  </li>
 
-                <li className="w-full">
-                    <NavLink to='/logout' exact={true} activeClassName="isActive" >
-                        <Button className="w-full flex items-center gap-2 !text-left !py-2  !px-5 !justify-start !rounded-none !text-[rgba(0,0,0,0.7)] !font-[600]"><IoIosLogOut className="text-[15px]" /> Logout</Button>
-                    </NavLink>
-                </li>
-            </ul>
+  <li className="w-full">
+    <NavLink to="/my-list" end>
+      {({ isActive }) => (
+        <Button
+          component="div"
+          className={[
+            "w-full flex items-center gap-2 !text-left !py-2 !px-5 !justify-start !rounded-none",
+            "!text-[rgba(0,0,0,0.7)] !font-[600]",
+            isActive ? "!bg-rose-50 !text-rose-700" : ""
+          ].join(" ")}
+        >
+          <IoMdHeart className="text-[15px]" /> My Lists
+        </Button>
+      )}
+    </NavLink>
+  </li>
+
+  <li className="w-full">
+    <NavLink to="/my-orders" end>
+      {({ isActive }) => (
+        <Button
+          component="div"
+          className={[
+            "w-full flex items-center gap-2 !text-left !py-2 !px-5 !justify-start !rounded-none",
+            "!text-[rgba(0,0,0,0.7)] !font-[600]",
+            isActive ? "!bg-rose-50 !text-rose-700" : ""
+          ].join(" ")}
+        >
+          <BsFillBagCheckFill className="text-[15px]" /> Orders
+        </Button>
+      )}
+    </NavLink>
+  </li>
+
+  <li className="w-full">
+    <NavLink to="/logout" end>
+      {({ isActive }) => (
+        <Button
+          component="div"
+          className={[
+            "w-full flex items-center gap-2 !text-left !py-2 !px-5 !justify-start !rounded-none",
+            "!text-[rgba(0,0,0,0.7)] !font-[600]",
+            isActive ? "!bg-rose-50 !text-rose-700" : ""
+          ].join(" ")}
+        >
+          <IoIosLogOut className="text-[15px]" /> Logout
+        </Button>
+      )}
+    </NavLink>
+  </li>
+</ul>
         </div>
     );
 };

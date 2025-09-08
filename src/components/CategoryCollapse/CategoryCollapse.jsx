@@ -109,8 +109,8 @@ const CategoryCollapse = () => {
                   {/* Inner Submenu */}
                   {openSubMenu === j && submenu.children?.length > 0 && (
                     <ul className="relative w-full pl-4 pr-1 space-y-1.5 mt-2 before:content-[''] before:absolute before:left-3 before:top-0.5 before:bottom-0.5 before:w-px before:bg-gray-200">
-                      {submenu.children.map((inner, k) => (
-                        <li key={inner._id} className="list-none">
+                      {submenu.children.map((inner, index) => (
+                        <li key={index} className="list-none">
                           <Link to={buildListUrl({ cat: menu._id, sub: submenu._id, third: inner._id })}>
                             <Button className="w-full !text-xs !justify-start !px-3 !py-1.5 !text-slate-700 !normal-case !rounded-md hover:!bg-indigo-50 hover:!text-indigo-700 !bg-white ring-1 ring-gray-200 hover:ring-indigo-200 transition">
                               <span className="inline-flex items-center gap-2">

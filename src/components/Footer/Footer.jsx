@@ -54,9 +54,9 @@ const leftForFree = Math.max(0, FREE_THRESHOLD - subtotal);
 
     return (
         <>
-            <div className="bg-white">
+            <div className="bg-white container mx-auto">
                 <footer>
-                    <div className="container mx-auto px-0 py-12">
+                    <div className="container mx-auto px-0 py-6">
                         {/* Footer Top */}
                         <div className="grid grid-cols-2 md:grid-cols-5 justify-center gap-2 md:gap-6">
                             {footerItems.map((item, idx) => (

@@ -229,7 +229,7 @@ const Sidebar = ({filters, onUpdateFilters, price, setPrice, counts = { cat: {},
   };
 
   return (
-    <aside className="sidebar relative rounded-3xl border border-gray-200/70 bg-gradient-to-b from-white to-gray-50 p-4 md:p-5 shadow-[0_1px_12px_rgba(2,6,23,0.05)] space-y-4">
+    <aside className="sidebar relative rounded-3xl border border-gray-200/70 bg-gradient-to-b from-white to-gray-50 p-4 md:p-2 shadow-[0_1px_12px_rgba(2,6,23,0.05)] space-y-4">
       {/* Shop by categories */}
       <div className="box rounded-2xl border border-gray-200 bg-white/80 backdrop-blur-sm shadow-sm">
         <h3 className="flex items-center justify-between px-3 md:px-4 py-3 text-[14px] md:text-[15px] font-semibold text-slate-900">
@@ -543,3 +543,4 @@ const Sidebar = ({filters, onUpdateFilters, price, setPrice, counts = { cat: {},
 };
 
 export default Sidebar;
+

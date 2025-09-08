@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { editData, postData } from "../../../utils/api";
 import { Collapse } from 'react-collapse';
 import 'react-international-phone/style.css';
+import SEO from "../../Seo/SEO";
 
 
 const MyAccount = () => {
@@ -140,6 +141,10 @@ const MyAccount = () => {
 
     return (
         <section className="py-10 w-full">
+            <SEO title="My Account | MM Fashion World"
+        description="Manage your orders, addresses, wishlist and account settings at MM Fashion World."
+        canonical="/my-account"
+        type="website"/>
             <div className="container flex flex-col md:flex-row gap-5">
                 {/* left sidebar */}
                 <div className="col1 w-full md:w-[20%]">

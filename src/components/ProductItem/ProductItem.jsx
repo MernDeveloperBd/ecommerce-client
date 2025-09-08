@@ -21,8 +21,6 @@ const ProductItem = ({ product }) => {
     openAlertBox,
     getCartItems,
     handleAddToMyList,
-    setIsAddedMyList,
-    isAddedMyList
   } = useContext(MyContext);
 
   const { _id, images = [], price, oldPrice, resellingPrice, catName, name, productSize } = product;

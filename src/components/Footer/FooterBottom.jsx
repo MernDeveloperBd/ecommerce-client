@@ -15,7 +15,7 @@ const FooterBottom = () => {
   };
 
   return (
-    <div className="footer container mx-auto px-2 py-10 md:py-12 rounded-3xl border border-gray-200/70 bg-gradient-to-b from-white to-gray-50 shadow-[0_1px_10px_rgba(2,6,23,0.04)]">
+    <div className="footer py-6 rounded-3xl bg-gradient-to-b from-white to-gray-50 shadow-[0_1px_10px_rgba(2,6,23,0.04)]">
   <div className="md:grid md:grid-cols-4 md:gap-6">
     {/* Contact Section */}
     <div className="col-span-1 mb-4 md:mb-0">
@@ -37,8 +37,8 @@ const FooterBottom = () => {
             <h2 className="text-sm md:!text-xl font-semibold text-slate-800">
               MM Fashion <span className="text-sky-600">World</span>
             </h2>
-            <p className="text-gray-600 mt-1">Nawabgonj, Dhaka</p>
-            <Link className="link block mb-3 text-sky-700 hover:text-sky-600 transition-colors" to="mailto:marifamisam@gmail.com">
+            <p className="text-gray-600 mt-1 text-sm mb-1">Mohammadpur, Dhaka</p>
+            <Link className="link block mb-3 text-sky-700 hover:text-sky-600 transition-colors text-sm" to="mailto:marifamisam@gmail.com">
               marifamisam@gmail.com
             </Link>
 
@@ -86,21 +86,42 @@ const FooterBottom = () => {
 
             {(openSection === 'products' || window.innerWidth >= 768) && (
               <ul className="space-y-1.5 text-sm">
-                {[
-                  'New Products',
-                  'Featured Products',
-                  'Latest Products',
-                  'Best Sales',
-                  'Contact us',
-                  'Sitemap',
-                ].map((text, i) => (
-                  <li key={i}>
-                    <Link to="/" className="group flex items-center gap-2 rounded-lg px-2 py-1.5 text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition">
+                <li >
+                    <Link to="/productListing?cat=68b17b95fd76640af810b03b" className="group flex items-center gap-2 rounded-lg px-2 py-1.5 text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition">
                       <span className="h-1.5 w-1.5 rounded-full bg-sky-300 group-hover:bg-sky-400 transition"></span>
-                      {text}
+                      Women Fashion
                     </Link>
                   </li>
-                ))}
+                <li >
+                    <Link to="/productListing?cat=68ada6938248689e15621edb" className="group flex items-center gap-2 rounded-lg px-2 py-1.5 text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition">
+                      <span className="h-1.5 w-1.5 rounded-full bg-sky-300 group-hover:bg-sky-400 transition"></span>
+                      Men Fashion
+                    </Link>
+                  </li>
+                <li >
+                    <Link to="/productListing?cat=68b17b95fd76640af810b03b" className="group flex items-center gap-2 rounded-lg px-2 py-1.5 text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition">
+                      <span className="h-1.5 w-1.5 rounded-full bg-sky-300 group-hover:bg-sky-400 transition"></span>
+                      Baby Fashion
+                    </Link>
+                  </li>
+                <li >
+                    <Link to="/productListing?cat=68b1ae38b0db8d166b399fd8" className="group flex items-center gap-2 rounded-lg px-2 py-1.5 text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition">
+                      <span className="h-1.5 w-1.5 rounded-full bg-sky-300 group-hover:bg-sky-400 transition"></span>
+                      Jewellery
+                    </Link>
+                  </li>
+                <li >
+                    <Link to="/productListing?cat=68b2ccedd63fa25a79b2b594" className="group flex items-center gap-2 rounded-lg px-2 py-1.5 text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition">
+                      <span className="h-1.5 w-1.5 rounded-full bg-sky-300 group-hover:bg-sky-400 transition"></span>
+                      Home Decore
+                    </Link>
+                  </li>
+                <li >
+                    <Link to="/productListing?cat=68b2ccedd63fa25a79b2b594" className="group flex items-center gap-2 rounded-lg px-2 py-1.5 text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition">
+                      <span className="h-1.5 w-1.5 rounded-full bg-sky-300 group-hover:bg-sky-400 transition"></span>
+                      Combo
+                    </Link>
+                  </li>
               </ul>
             )}
           </div>
@@ -121,21 +142,38 @@ const FooterBottom = () => {
 
             {(openSection === 'shop' || window.innerWidth >= 768) && (
               <ul className="space-y-1.5 text-sm">
-                {[
-                  'Delivery',
-                  'Legal Notice',
-                  'T & C',
-                  'About Us',
-                  'Secure Payment',
-                  'Login',
-                ].map((text, i) => (
-                  <li key={i}>
-                    <Link to="/" className="group flex items-center gap-2 rounded-lg px-2 py-1.5 text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition">
+               
+                  <li >
+                    <Link to="/about" className="group flex items-center gap-2 rounded-lg px-2 py-1.5 text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition">
                       <span className="h-1.5 w-1.5 rounded-full bg-sky-300 group-hover:bg-sky-400 transition"></span>
-                      {text}
+                      About Us
                     </Link>
                   </li>
-                ))}
+                  <li >
+                    <Link to="/t&c" className="group flex items-center gap-2 rounded-lg px-2 py-1.5 text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition">
+                      <span className="h-1.5 w-1.5 rounded-full bg-sky-300 group-hover:bg-sky-400 transition"></span>
+                      Terms & Conditons
+                    </Link>
+                  </li>
+                  <li >
+                    <Link to="#" className="group flex items-center gap-2 rounded-lg px-2 py-1.5 text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition">
+                      <span className="h-1.5 w-1.5 rounded-full bg-sky-300 group-hover:bg-sky-400 transition"></span>
+                      Site maps
+                    </Link>
+                  </li>
+                  <li >
+                    <Link to="#" className="group flex items-center gap-2 rounded-lg px-2 py-1.5 text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition">
+                      <span className="h-1.5 w-1.5 rounded-full bg-sky-300 group-hover:bg-sky-400 transition"></span>
+                      FAQ
+                    </Link>
+                  </li>
+                  <li >
+                    <Link to="/contactUs" className="group flex items-center gap-2 rounded-lg px-2 py-1.5 text-slate-700 hover:bg-sky-50 hover:text-sky-700 transition">
+                      <span className="h-1.5 w-1.5 rounded-full bg-sky-300 group-hover:bg-sky-400 transition"></span>
+                      Contact Us
+                    </Link>
+                  </li>
+                
               </ul>
             )}
           </div>

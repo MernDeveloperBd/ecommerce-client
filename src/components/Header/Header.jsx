@@ -19,7 +19,7 @@ import { FiHelpCircle, FiTruck, FiUploadCloud, FiUser } from "react-icons/fi";
 
 
 const Header = () => {
-    const { setOpenCartModal, isLogin, setIsLogin, userData, cartData, setUserData, setCartData} = useContext(MyContext)
+    const { setOpenCartModal, isLogin, setIsLogin, userData, cartData, setUserData, setCartData } = useContext(MyContext)
     const [anchorEl, setAnchorEl] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const open = Boolean(anchorEl);
@@ -47,7 +47,7 @@ const Header = () => {
     }
 
     return (
-        <header className="bg-white sticky -top-[90px] md:-top-[60px] z-50 shadow-md py-1">
+        <header className="bg-white sticky -top-[90px] md:-top-[60px] z-50 shadow-md py-1 ">
             <div className="top-strip py-1 ">
                 <div className=" ">
                     <div className="relative bg-gradient-to-r from-gray-50 via-white to-gray-50 text-gray-700 text-xs md:text-sm border-b border-gray-200/70">
@@ -104,7 +104,7 @@ const Header = () => {
                                     <ul className="flex items-center justify-center md:justify-end gap-2 sm:gap-4 text-center md:text-left">
                                         <li className="hidden md:block " >
                                             <Link
-                                                to="/help-center"
+                                                to="#"
                                                 className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors hover:text-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                                             >
                                                 <FiHelpCircle className="text-sm opacity-80" />
@@ -115,7 +115,7 @@ const Header = () => {
                                         <li className="hidden md:block h-4 w-px bg-gray-300/70" aria-hidden="true" />
                                         <li className="hidden md:block " >
                                             <Link
-                                                to="/order-tracking"
+                                                to="#"
                                                 className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors hover:text-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                                             >
                                                 <FiTruck className="text-sm opacity-80" />
@@ -219,14 +219,16 @@ const Header = () => {
                                     <Link to="/login" className="logInReg-link">Login</Link> / <Link to="/register" className="logInReg-link">Register</Link>
                                 </li> :
                                     <>
-                                        <Button onClick={handleClick} className="myAccountWrap flex items-center gap-2 cursor-pointer ">
-                                            <Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-[#f1f1f1]">{userData ? <img src={userData?.avatar} alt="user_image" className="!w-[35px] !h-[35px] !min-w-[35px] rounded-full object-cover" /> : <FaRegUser className="text-[16px] text-[#000]" />}</Button>
-                                            <div className="info flex flex-col">
-                                                <h4 className="text-[10px] md:text-[12px] font-bold text-[rgba(0,0,0,0.7)] mb-0 text-left justify-start leading-4">{userData?.name}</h4>
-                                                <span className="text-[9px] md:text-[11px] text-left justify-start">{userData?.email}</span>
+                                        <Button onClick={handleClick} className="myAccountWrap flex items-center gap-2">
+                                            <span className="inline-flex items-center justify-center w-[35px] h-[35px] rounded-full bg-[#f1f1f1] overflow-hidden">
+                                                {userData ? (
+                                                    <img src={userData.avatar} alt="user" className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <FaRegUser className="text-[16px] text-[#000]" />
+                                                )}
+                                            </span>
 
-                                            </div>
-                                        </Button>
+                                            <div className="info flex flex-col"> <h4 className="text-[10px] md:text-[12px] font-bold leading-4">{userData?.name}</h4> <span className="text-[9px] md:text-[11px]">{userData?.email}</span> </div> </Button>
                                         {/* menu*/}
                                         <Menu
                                             anchorEl={anchorEl}
@@ -306,11 +308,11 @@ const Header = () => {
                                     <Tooltip title="Wishlist">
                                         <IconButton>
                                             <Link to='/my-list'>
-                                            <Stack spacing={1} direction="row" sx={{ color: 'action.active' }}>
-                                                <Badge color="secondary" badgeContent={2} showZero>
-                                                    <FaRegHeart className="text-xl" />
-                                                </Badge>
-                                            </Stack>
+                                                <Stack spacing={1} direction="row" sx={{ color: 'action.active' }}>
+                                                    <Badge color="secondary" badgeContent={0} showZero>
+                                                        <FaRegHeart className="text-xl" />
+                                                    </Badge>
+                                                </Stack>
                                             </Link>
                                         </IconButton>
                                     </Tooltip>

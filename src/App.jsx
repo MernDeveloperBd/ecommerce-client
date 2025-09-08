@@ -32,6 +32,11 @@ import ScrollToTop from './components/ScrolTop/ScrollToTop'
 
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import app from './firebaseConfig/firebase.config'
+import { HelmetProvider } from 'react-helmet-async'
+import AboutUs from './components/AboutUs/AboutUs'
+import Terms from './components/Terms/Terms'
+import FloatingContact from './components/FloatingContact/FloatingContac'
+import ContactUsPage from './components/ContactUsPage/ContactUsPage'
 
 const auth = getAuth(app)
 const googleProvider = new GoogleAuthProvider();
@@ -234,6 +239,7 @@ useEffect(() => {
     <>
       <BrowserRouter>
         <ScrollToTop />
+        <HelmetProvider>
         <MyContext.Provider value={values}>
           <Header />
           <div className='min-h-screen'>
@@ -251,12 +257,17 @@ useEffect(() => {
               <Route path={'/my-list'} exact={true} element={<MyList />} />
               <Route path={'/my-orders'} exact={true} element={<Orders />} />
               <Route path={'/address'} exact={true} element={<Address />} />
+              <Route path={'/about'} exact={true} element={<AboutUs />} />
+              <Route path={'/t&c'} exact={true} element={<Terms />} />
+              <Route path={'/contactUs'} exact={true} element={<ContactUsPage />} />
 
             </Routes>
           </div>
           <Footer />
         </MyContext.Provider>
+        </HelmetProvider>
       </BrowserRouter>
+      <FloatingContact/>
       <Toaster />
 
       {/* modal */}

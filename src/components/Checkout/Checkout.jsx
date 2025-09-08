@@ -32,8 +32,8 @@ const Checkout = () => {
   // Public config for showing the receiver number (frontend)
   const BKASH_RECEIVER =
     (typeof import.meta !== 'undefined' && import.meta.env?.VITE_BKASH_RECEIVER) ||
-    (typeof process !== 'undefined' && process.env?.REACT_APP_BKASH_RECEIVER) ||
-    '01572035173';
+    (typeof process !== 'undefined' && import.meta.env?.REACT_APP_BKASH_RECEIVER) ||
+    '01749889595';
 
   const selectedDivision = useMemo(
     () => Divisions.find((d) => d.key === division),
@@ -303,18 +303,6 @@ const Checkout = () => {
                   inputProps={{ maxLength: 500 }}
                   helperText={`${formData.note.length}/500`}
                 />
-              </div>
-
-              {/* Place Order */}
-              <div className="pt-4">
-                <Button
-                  onClick={handleSubmit}
-                  disabled={submitting || !cartData?.length}
-                  className="bg-btn hover:bg-btn w-full flex items-center gap-2 !text-white"
-                >
-                  <BsFillBagCheckFill className="text-[20px]" />
-                  {submitting ? 'Placing order...' : 'Place Order'}
-                </Button>
               </div>
             </form>
           </div>

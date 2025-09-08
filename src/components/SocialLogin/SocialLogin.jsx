@@ -11,7 +11,6 @@ const SocialLogin = () => {
   // sign in with google
   const handleGoogleLogIn = () => {
     googleLogIn().then((result) => {
-      console.log(result);
       const user = result.user;
       const fields = {
         name: user.providerData[0].displayName,

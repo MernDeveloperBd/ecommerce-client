@@ -10,9 +10,8 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { postData } from "../../../utils/api";
-import { MyContext } from "../../../App";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import { useLocation } from "react-router-dom";
@@ -21,10 +20,12 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import LastPageIcon from '@mui/icons-material/LastPage';
+import SEO from "../../Seo/SEO";
 
 function handleClick(event) { event.preventDefault(); }
 
 const SORT_OPTIONS = [
+  { key: "newest", label: "Newest" },
   { key: "salesHighToLow", label: "Sales High to Low" },
   { key: "nameAToZ", label: "Name, A to Z" },
   { key: "nameZToA", label: "Name, Z to A" },
@@ -89,7 +90,7 @@ const ProductListing = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [itemView, setItemView] = useState('grid');
   const [productData, setProductData] = useState([]);
-  const [isGridLoading, setIsGridLoading] = useState(false); // <-- শুধু গ্রিড লোডিং
+  const [isGridLoading, setIsGridLoading] = useState(true); // প্রথম লোডে skeleton দেখাবে
   const [page, setPage] = useState(1);
   const [limit] = useState(20);
   const [totalPages, setTotalPages] = useState(1);
@@ -109,7 +110,7 @@ const ProductListing = () => {
     availability: undefined,
   });
   const [priceRange, setPriceRange] = useState([100, 15000]);
-  const [sort, setSort] = useState("salesHighToLow");
+  const [sort, setSort] = useState("newest");
   const [sortLabel, setSortLabel] = useState("Sales High to Low");
 
   // search
@@ -127,9 +128,16 @@ const ProductListing = () => {
   const open = Boolean(anchorEl);
   const handleClickSort = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
-  const handleSelectSort = (key, label) => { setSort(key); setSortLabel(label); setPage(1); handleClose(); };
+  const handleSelectSort = (key, label) => {
+    setSort(key);
+    setSortLabel(label);
+    setPage(1);
+    setIsGridLoading(true); // skeleton on sort
+    handleClose();
+  };
 
   const updateFilters = (change) => {
+    setIsGridLoading(true); // skeleton on filter/category click
     setFilters((prev) => {
       const next = typeof change === "function" ? change(prev) : { ...prev, ...change };
       return next;
@@ -138,6 +146,7 @@ const ProductListing = () => {
   };
 
   const handleReset = () => {
+    setIsGridLoading(true); // skeleton on reset
     setFilters({
       catId: [],
       subCatId: [],
@@ -151,7 +160,7 @@ const ProductListing = () => {
     });
     setPriceRange([100, 15000]);
     setSearchText("");
-    setSort("salesHighToLow");
+    setSort("newest");
     setSortLabel("Sales High to Low");
     setPage(1);
   };
@@ -193,7 +202,7 @@ const ProductListing = () => {
     const myReqId = ++reqIdRef.current;
     const body = JSON.parse(sig);
 
-    setIsGridLoading(true); // <-- শুধু গ্রিডে শিমার দেখাবো
+    setIsGridLoading(true); // নিরাপদে শিমার অন
 
     postData(`/api/product/filters`, body, { signal: controller.signal })
       .then((res) => {
@@ -230,6 +239,10 @@ const ProductListing = () => {
 
   return (
     <section>
+      <SEO title="Buy Clothes & Accessories Online | MM Fashion World"
+        description="trending styles for men and women. Filter by category, color, size and price. Fast delivery across Bangladesh. "
+        canonical="/productListing"
+        type="website"/>
       <div role="presentation" onClick={handleClick} className="container py-2">
         <Breadcrumbs aria-label="breadcrumb">
           <Link underline="hover" color="inherit" href="/" className="link">Home</Link>
@@ -258,7 +271,7 @@ const ProductListing = () => {
 
           {/* Right side */}
           <div ref={listingTopRef} className="rightContent w-full md:w-[80%] py-3">
-            {/* Toolbar (always visible; no shimmer) */}
+            {/* Toolbar */}
             <div className="w-full rounded-xl border border-gray-200 bg-gradient-to-r from-white to-gray-50 p-3 md:p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-3">
               <div className="col1 flex items-center gap-2 md:gap-3">
                 <Button
@@ -301,7 +314,7 @@ const ProductListing = () => {
                     size="small"
                     placeholder="Search products..."
                     value={searchText}
-                    onChange={(e) => { setSearchText(e.target.value); setPage(1); }}
+                    onChange={(e) => { setSearchText(e.target.value); setPage(1); setIsGridLoading(true); }}
                     sx={{
                       minWidth: { xs: 200, md: 260 },
                       '& .MuiOutlinedInput-root': {
@@ -403,7 +416,7 @@ const ProductListing = () => {
                     <Pagination
                       count={totalPages}
                       page={page}
-                      onChange={(e, value) => setPage(value)}
+                      onChange={(e, value) => { setPage(value); setIsGridLoading(true); }}
                       showFirstButton
                       showLastButton
                       siblingCount={1}

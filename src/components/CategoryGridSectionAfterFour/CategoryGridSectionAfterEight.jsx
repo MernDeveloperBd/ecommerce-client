@@ -61,7 +61,7 @@ const CategoryGridSection16 = () => {
 
               {/* 4x4 grid */}
               <div className="grid grid-cols-4 grid-rows-4 gap-2 flex-grow h-[420px]">
-                {Array.from({ length: 16 }).map((_, idx) => {
+                {Array.from({ length: 13 }).map((_, idx) => {
                   // Middle big image at index 5
                   if (idx === 5) {
                     const bigImage = catProducts[0];

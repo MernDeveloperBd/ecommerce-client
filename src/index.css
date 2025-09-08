@@ -41,6 +41,10 @@ body{
 
  .link:hover{color: #ff5282; cursor: pointer; transition: all; transition-duration:700ms; }
 
+ .shop_now{
+  @apply bg-violet-600 hover:bg-violet-700 text-white px-6 py-2 rounded-md font-semibold transition
+}
+
 /* === NAVIGATION BUTTONS === */
 .swiper-button-prev,
 .swiper-button-next {
@@ -311,4 +315,20 @@ body{
 /* reduce motion */
 @media (prefers-reduced-motion: reduce) {
   .skel::after { animation: none; }
+}
+
+/* floating contact */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
 }

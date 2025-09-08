@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- NOTE: আপনার আসল প্রোডাক্ট আইডি বসান; একই ফরম্যাটে যত খুশি URL যোগ করুন -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.mmfashionworld.com/productDetails/66aa11bb22cc33dd44ee55ff</loc>
+    <lastmod>2025-09-06T00:00:00+06:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.mmfashionworld.com/productDetails/66aa11bb22cc33dd44ee5600</loc>
+    <lastmod>2025-09-05T00:00:00+06:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+</urlset>

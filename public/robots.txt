@@ -1,0 +1,38 @@
+User-agent: *
+
+Block private or thin pages
+Disallow: /api/
+Disallow: /admin
+Disallow: /cart
+Disallow: /checkout
+Disallow: /login
+Disallow: /register
+Disallow: /verify
+Disallow: /forgot-Password
+Disallow: /forgot-password
+Disallow: /my-account
+Disallow: /my-orders
+Disallow: /address
+Disallow: /my-list
+
+Block crawl-heavy query params on listing/search
+Disallow: /*?search=
+Disallow: /?q=
+Disallow: /?page=
+Disallow: /?sort=
+Disallow: /?color=
+Disallow: /?productSize=
+Disallow: /?rating=
+Disallow: /?minPrice=
+Disallow: /?*maxPrice=
+
+Allow main listing path
+Allow: /productListing$
+
+Sitemaps
+Sitemap: https://www.mmfashionworld.com/sitemap.xml
+Sitemap: https://www.mmfashionworld.com/sitemap-products.xml
+Sitemap: https://www.mmfashionworld.com/sitemap-categories.xml
+
+Optional (some crawlers use it)
+Host: www.mmfashionworld.com

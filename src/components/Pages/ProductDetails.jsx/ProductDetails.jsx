@@ -9,6 +9,7 @@ import RelatedProducts from '../../RelatedProducts/RelatedProducts';
 import { MyContext } from '../../../App';
 import Reviews from './Reviews';
 import Rating from '@mui/material/Rating';
+import SEO from '../../Seo/SEO';
 
 // ============ Custom Shimmer ============ //
 const Skel = ({ className = "" }) => <div className={`skel ${className}`} aria-hidden />;
@@ -205,6 +206,10 @@ const ProductDetails = () => {
 
   return (
     <div className='py-5 pb-0'>
+      <SEO title={`${productData?.name} || MM Fashion World`}
+        description="Browse latest collections. Filter by category, price, color and size."
+        canonical="/productListing"
+        type="website"/>
       {/* Breadcrumbs */}
       <div role="presentation" onClick={handleClick} className="container pb-2">
         {isLoading ? (
